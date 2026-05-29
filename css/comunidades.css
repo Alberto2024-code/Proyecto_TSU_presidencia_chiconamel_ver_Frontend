@@ -1,0 +1,83 @@
+/* Centrar todo el contenido */
+/* Contenedor General */
+.contenedor-principal {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 20px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Títulos */
+h2 {
+    color: #333;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Buscador */
+.search-container {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+
+.search-container input {
+    width: 80%;
+    padding: 12px 25px;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.search-container input:focus {
+    border-color: #27ae60;
+    box-shadow: 0 0 8px rgba(39, 174, 96, 0.2);
+}
+
+/* Estilo Base de las Tarjetas (Links) */
+.card, .card-grande {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    background-color: white;
+    color: #3c3347; /* Morado */
+    font-weight: bold;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.card:hover, .card-grande:hover {
+   background-color: #f8f9fa; /* Un blanco hueso muy sutil */
+    color: #3c3347; 
+    transform: translateY(-8px) scale(1.05); /* Sube un poco y crece apenas */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15); /* Sombra más pesada */
+    border-color: #148c1c;
+    
+}
+
+/* Tamaños específicos */
+.card-grande {
+    width: 100%;
+    max-width: 400px;
+    height: 100px;
+    margin: 0 auto 40px auto; 
+    font-size: 1.5rem;
+}
+
+/* Grid de comunidades */
+.grid-comunidades {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    height: 80px;
+    font-size: 1rem;
+}
+

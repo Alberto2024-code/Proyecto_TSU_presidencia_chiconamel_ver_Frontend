@@ -1,0 +1,97 @@
+/* --- TABLA PRINCIPAL --- */
+.tabla-usuarios {
+    width: 98%; /* Un poco más ancha para aprovechar el espacio */
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08); /* Sombra más suave y moderna */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- ENCABEZADO --- */
+.tabla-usuarios thead {
+    background-color: #1a1c1e; /* Un gris casi negro más elegante */
+    color: #ffffff;
+}
+
+.tabla-usuarios th {
+    padding: 18px 15px;
+    text-align: left;
+    font-size: 0.75rem; /* Más pequeña y separada se ve más "Pro" */
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 600;
+}
+
+/* --- CELDAS --- */
+.tabla-usuarios td {
+    padding: 15px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.85rem;
+    color: #444;
+    vertical-align: middle; /* Centra el contenido verticalmente */
+}
+
+/* Efecto Cebra y Hover suave */
+.tabla-usuarios tbody tr:nth-child(even) {
+    background-color: #fcfcfc;
+}
+
+.tabla-usuarios tbody tr:hover {
+    background-color: #f1fdf4; 
+    transition: background 0.2s ease;
+}
+
+/* --- ESTADO ACTIVO (BADGE) --- */
+/* En lugar de solo texto verde, le damos fondo */
+.status-activo {
+    background-color: #e6fffa;
+    color: #047857;
+    padding: 4px 10px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    display: inline-block;
+}
+
+/* --- BOTONES DE ACCIÓN --- */
+.btn-recibo {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 14px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-recibo:hover {
+    background-color: #1e7e34;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+/* Estilo para los links de Editar/Eliminar */
+.accion-link {
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.8rem;
+    margin: 0 5px;
+    padding: 5px 8px;
+    border-radius: 4px;
+}
+
+.edit {
+    color: #007bff;
+}
+.edit:hover { background-color: #e7f1ff; }
+
+.delete {
+    color: #dc3545;
+}
+.delete:hover { background-color: #ffeef0; }
