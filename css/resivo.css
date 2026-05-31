@@ -1,0 +1,121 @@
+body {
+    background-color: #555;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.recibo-papel {
+    background-color: white;
+    width: 18cm;
+    min-height: 24cm;
+    padding: 1cm;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    border: 1px solid #ccc;
+    position: relative;
+}
+
+/* Encabezado */
+.header-recibo {
+    display: flex;
+    justify-content: space-between;
+}
+
+.texto-header {
+    text-align: center;
+}
+
+.texto-header h2 { margin: 0; font-size: 18px; }
+.texto-header h3 { margin: 5px 0; font-size: 16px; }
+
+.folio-box {
+    border: 2px solid #000;
+    padding: 10px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.num-folio {
+    color: red;
+    font-weight: bold;
+    font-size: 20px;
+    display: block;
+}
+
+/* Datos */
+.titulo-central {
+    border: 2px solid #000;
+    text-align: center;
+    margin: 15px 0;
+    border-radius: 10px;
+}
+
+.linea {
+    margin-bottom: 10px;
+    display: flex;
+}
+
+.dato {
+    border-bottom: 1px solid #000;
+    padding: 0 10px;
+    flex-grow: 0;
+}
+
+.dato-largo {
+    border-bottom: 1px solid #000;
+    flex-grow: 1;
+    margin-left: 10px;
+}
+
+/* Tabla */
+.tabla-recibo {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.tabla-recibo th, .tabla-recibo td {
+    border: 1px solid #000;
+    padding: 8px;
+}
+
+.tabla-recibo th {
+    background-color: #eee;
+}
+
+.fila-total {
+    font-weight: bold;
+    background-color: #eee;
+}
+
+/* Footer */
+.footer-recibo {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.espacio-firma {
+    border-bottom: 1px solid #000;
+    width: 200px;
+    height: 60px;
+}
+
+.no-print {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Configuración de impresión */
+@media print {
+    body { background: none; padding: 0; }
+    .no-print { display: none; }
+    .recibo-papel { box-shadow: none; border: none; width: 100%; }
+}

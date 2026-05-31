@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/login.css">
+    <title>SERVICIO DE AGUA POTABLE</title>
+</head>
+<body>
+  <header> 
+    <h1>TU SISTEMA DE AGUA CONFIABLE</h1>
+     <nav>
+        <a href="Comunidades.html"> Comunidades</a>
+        <a href="pagos.html">pagos</a>
+        <a href="tipo_servicio.html">Tipo servicio</a>
+        <a href="tipos_descuento.html">Tipo descuentos</a>
+        <a href="menu.html">inicio</a>
+    
+    </nav> 
+</header>
+<div class="contenedor-pagos">
+        <section class="seccion-busqueda">
+            <h3>Búsqueda de Contribuyente</h3>
+            <div class="search-bar">
+                <input type="text" placeholder="Nombre o No. de Cuenta...">
+                <button>Buscar</button>
+            </div>
+
+            <div class="info-cliente">
+                <p><strong>Contribuyente:</strong> HONORIO LARA HERNANDEZ</p>
+                <p><strong>Localidad:</strong> HUMOTITLA</p>
+            </div>
+
+            <h4>Seleccionar meses a pagar:</h4>
+            <div class="grid-meses">
+                <label class="mes-item"><input type="checkbox"> May-26</label>
+                <label class="mes-item"><input type="checkbox"> Jun-26</label>
+                <label class="mes-item paid"> Ene-26 (Pagado)</label>
+            </div>
+        </section>
+
+        <section class="seccion-recibo">
+            <div class="recibo-preview">
+                <div class="header-recibo">
+                    <h4>MUNICIPIO DE CHICONAMEL</h4>
+                    <small>Recibo de Pago Oficial</small>
+                </div>
+                
+                <form class="form-cobro">
+                    <div class="campo">
+                        <label>Servicio Doméstico:</label>
+                        <input type="number" value="70.00">
+                    </div>
+                    <div class="campo">
+                        <label>Rezagos:</label>
+                        <input type="number" placeholder="0.00">
+                    </div>
+                    <div class="campo">
+                        <label>Recargos:</label>
+                        <input type="number" placeholder="0.00">
+                    </div>
+                    <div class="campo">
+                        <label>Descuentos:</label>
+                        <input type="number" placeholder="0.00" class="desc">
+                    </div>
+                    <div class="total-box">
+                        <span>TOTAL A PAGAR:</span>
+                        <span class="monto">$70.00</span>
+                    </div>
+                    <button type="button" class="btn-imprimir">GENERAR RECIBO (Nº 1801)</button>
+                </form>
+            </div>
+        </section>
+    </div>
+    
+</body>
+</html>
