@@ -5,71 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/login.css">
     <link rel="stylesheet" href="../css/civiles.css">
-    
-    <title>Sistema wed de cobro de agua potable</title>
+    <title>Sistema web de cobro de agua potable</title>
 </head>
  
 <body>
-    <header> <h1>TU SISTEMA DE AGUA CONFIABLE</h1>
-    <nav>
-     
-       <a href="Comunidades.html"> Comunidades</a>
-        <a href="pagos.html">pagos</a>
-        <a href="tipo_servicio.html">Tipo servicio</a>
-        <a href="tipos_descuento.html">Tipo descuentos</a>
-        <a href="duedores.html">Deudores</a>
-        <a href="menu.html">inicio</a>
-    
-    </nav> </header>
+    <header> 
+        <h1>TU SISTEMA DE AGUA CONFIABLE</h1>
+        <nav>
+            <a href="Comunidades.html"> Comunidades</a>
+            <a href="pagos.html">pagos</a>
+            <a href="tipo_servicio.html">Tipo servicio</a>
+            <a href="tipos_descuento.html">Tipo descuentos</a>
+            <a href="resagados.html">Resagados</a>
+            <a href="menu.html">inicio</a>
+        </nav> 
+    </header>
+
     <div class="search-container">
         <input type="text" placeholder="Ingresa el nombre del usuario">
     </div>
+
     <table class="tabla-usuarios">
-    <thead>
-        <tr>
-            <th>NOMBRE</th>
-            <th>APELLIDO PATERNO</th>
-            <th>APELLIDO MATERNO</th>
-            <th>TELEFONO</th>
-            <th>DOMICILIO</th>
-            <th>CUENTA_NO</th>
-            <th>TIPO SERVICIO</th>
-            <th>ESTADO</th>
-            <th>COMUNIDAD</th>
-            <th>FECHA REGISTRO</th>
-            <th>Pago</th>
-            <th>RESIVO</th>
-            <th>ACCIONES</th> </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>JESUS</td>
-            <td>HERNANDEZ</td>
-            <td>CRUZ</td>
-            <td>7711234567</td>
-            <td>787 0066</td>
-            <td> 09 </td>
-            <td>DOMESTICO</td>
-            <td>ACTIVO</td>
-            <td>TALTAMAYA</td>
-            <td>06-05-2026</td>
-            <td>
-            <section>
-                <option value="PAGADO">PAGADO</option>
-                <option value="PENDIENTE">PENDIENTE</option>
-            </section>
-            </td>
-            <td>
-                <a href="resivo.html?id=0066" class="btn-recibo">📄 Ver Recibo</a>
-            </td>
-            <td>
-                <div>
-                <a href="#"class="card-acciones">ELIMINAR</a>/<a href="#" class="card-acciones">EDITAR</a>
-                </div>
-            </td>
-        </tr>
-    </tbody>
-</table>
+        <thead>
+            <tr>
+                <th>NOMBRE</th>
+                <th>APELLIDO PATERNO</th>
+                <th>APELLIDO MATERNO</th>
+                <th>TELEFONO</th> <th>DOMICILIO</th>
+                <th>CUENTA_NO</th>
+                <th>TIPO SERVICIO</th>
+                <th>comunidad</th>
+                <th>ESTADO</th>
+                <th>PAGO</th>
+                <th>RECIBO</th>
+                <th>ACCIONES</th> 
+            </tr>
+        </thead>
+        
+        <tbody id="tabla-usuarios">
+            </tbody>
+    </table>
     
+    <script src="../JavaScrip/barrios_chiconamel.js"></script>
 </body>
 </html>
