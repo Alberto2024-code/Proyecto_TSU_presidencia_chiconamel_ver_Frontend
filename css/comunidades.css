@@ -81,3 +81,28 @@ h2 {
     font-size: 1rem;
 }
 
+/* Botón de Agregar Comunidad */
+
+.agregar-comunidad a {
+    display: inline-flex;     
+    justify-content: center;    
+    align-items: center;        
+    width: 180px;              
+    height: 45px;
+    border-radius: 8px;         
+    margin: 0 0 30px auto;      
+    background-color: #27ae60;
+    color: white;              
+    font-size: 1rem;
+    font-weight: bold;         
+    text-decoration: none;
+    transition: all 0.3s ease;  
+}
+
+.agregar-comunidad:hover {
+    background-color: #f8f9fa;  
+    color: #27ae60;             
+    transform: translateY(-4px) scale(1.03); 
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); 
+    border: 2px solid #27ae60; 
+}

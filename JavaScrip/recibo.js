@@ -2,10 +2,8 @@
 function cargarDatosRecibo(ciudadano) {
     if (!ciudadano) return;
 
-    // Unimos nombre y apellidos limpiando los saltos de línea (\r\n) de la base de datos
     const nombreCompleto = `${ciudadano.nombre} ${ciudadano.apellido_paterno} ${ciudadano.apellido_materno || ''}`.replace(/\r?\n|\r/g, "").trim();
     
-    // Formateamos la fecha de registro
     let dia = "--", mes = "--", anio = "--";
     if (ciudadano.fecha_registro) {
         const fecha = new Date(ciudadano.fecha_registro);
@@ -15,7 +13,6 @@ function cargarDatosRecibo(ciudadano) {
         anio = String(fecha.getFullYear()).slice(-2);
     }
 
-    // Llenamos la información general en los elementos con ID
     document.getElementById('recibo-folio').innerText = `No. ${ciudadano.id_ciudadano || '--'}`;
     document.getElementById('fecha-dia').innerText = dia;
     document.getElementById('fecha-mes').innerText = mes;
@@ -26,7 +23,13 @@ function cargarDatosRecibo(ciudadano) {
     document.getElementById('recibo-mes-pago').innerText = mes.toUpperCase();
     document.getElementById('cliente-cuenta').innerText = ciudadano.cuenta_no || 'S/N';
 
-    // Costo por tipo de servicio
+
+    const campoCurp = document.getElementById('cliente-curp') || document.getElementById('cliente-curd');
+    if (campoCurp) {
+        campoCurp.innerText = ciudadano.curp || ciudadano.curd || 'S/N';
+    }
+
+   
     let costoDomestico = 0;
     let costoComercial = 0;
 
@@ -38,7 +41,7 @@ function cargarDatosRecibo(ciudadano) {
 
     const totalAPagar = costoDomestico + costoComercial;
 
-    // Llenamos la tabla de importes
+   
     document.getElementById('imp-domestico').innerText = costoDomestico > 0 ? `$ ${costoDomestico.toFixed(2)}` : '$ 0.00';
     document.getElementById('imp-comercial').innerText = costoComercial > 0 ? `$ ${costoComercial.toFixed(2)}` : '$ 0.00';
     document.getElementById('imp-contrato').innerText = '$ 0.00';
@@ -50,7 +53,6 @@ function cargarDatosRecibo(ciudadano) {
     
     document.getElementById('imp-total').innerText = `$ ${totalAPagar.toFixed(2)}`;
     
-    // Total a letras
     if (totalAPagar === 60) {
         document.getElementById('total-letras').innerText = "SESENTA PESOS 00/100 M.N.";
     } else if (totalAPagar === 100) {
@@ -60,24 +62,36 @@ function cargarDatosRecibo(ciudadano) {
     }
 }
 
-// 2. Escuchador principal que arranca al cargar la página
+
 window.addEventListener('DOMContentLoaded', () => {
-    // Leemos los parámetros de la URL actual
+   
     const urlParams = new URLSearchParams(window.location.search);
     const cuentaBuscada = urlParams.get('cuenta'); 
-    let idComunidad = urlParams.get('comunidad'); // Intentamos leer la comunidad directamente de la URL
+    let idComunidad = urlParams.get('comunidad'); 
+    const accion = urlParams.get('accion'); 
+
+   
+    const btnRegistrarPago = document.getElementById('btn-registrar-pago');
+    if (btnRegistrarPago) {
+       
+        if (accion === 'ver') {
+            btnRegistrarPago.style.display = 'none';
+        } else {
+            btnRegistrarPago.style.display = 'inline-block';
+        }
+    }
 
     if (!cuentaBuscada) {
         document.getElementById('cliente-nombre').innerText = 'Error: Cuenta no especificada';
         return;
     }
 
-    // Si por alguna razón la URL no trae la comunidad, le asignamos la 2 (que es la de tu captura) para que no falle
+    
     if (!idComunidad) {
-        idComunidad = 2; 
+        idComunidad = 1; 
     }
 
-    // Llamamos exactamente a tu endpoint del backend de la captura
+    
     const url = `http://localhost:3000/api/civiles/civiles/comunidad/${idComunidad}`;
 
     fetch(url)
@@ -87,7 +101,7 @@ window.addEventListener('DOMContentLoaded', () => {
         })
         .then(data => {
             if (Array.isArray(data)) {
-                // Buscamos al ciudadano que coincida exactamente con la cuenta_no de la URL
+                
                 const ciudadanoEncontrado = data.find(c => String(c.cuenta_no).trim() === String(cuentaBuscada).trim());
                 
                 if (ciudadanoEncontrado) {

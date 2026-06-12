@@ -3,7 +3,7 @@
     width: 98%; /* Un poco más ancha para aprovechar el espacio */
     margin: 20px auto;
     border-collapse: collapse;
-    background-color: white;
+    background-color: rgb(240, 236, 236);
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 10px 25px rgba(0,0,0,0.08); /* Sombra más suave y moderna */
@@ -95,3 +95,5 @@
     color: #dc3545;
 }
 .delete:hover { background-color: #ffeef0; }
+
+

@@ -7,31 +7,37 @@
     <title>Sistema wed de cobro de agua potable </title>
 </head>
 <body>
-    <header> <h1>TU SISTEMA DE AGUA CONFIABLE </h1>
-    <a href="menu.html">MENU</a></header>
+    <header> 
+        <h1>TU SISTEMA DE AGUA CONFIABLE </h1>
+        <a href="menu.html">MENU</a>
+    </header>
 
     <div class="contenedor">
         <div class="logo"> <img src="/imagenes/logo.png" alt="logo agua"></div>
     
-    <div class="login">
-         <div class="icono">
+        <div class="login">
+            <div class="icono">
                 <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="">
             </div>
-           <form  id="login">
-            <label> Usuario</label>
-            <input type="text" placeholder="Ingresa tu nombre de Usuario" required >
-
-            <label>Contraseña</label>
-            <input type="password" placeholder="Ingresa tu Contraseña" required>
-            <label>Tipo usuario</label>
-                <select>
-                    <option>Administrador</option>
-                    <option>Empleado</option>
-                </select>
-
+            
+            <form id="login">
+                <label>Usuario</label>
+                <input type="text" id="input-username" placeholder="Ingresa tu nombre de Usuario" required>
+                
+                <label>Contraseña</label>
+                <input type="password" id="input-password" placeholder="Ingresa tu contraseña" required>
+                
+                <section>
+                    <label>Tipo de usuario</label>
+                    <select id="selectRol" required>
+                        <option value="Administrador">Administrador</option>
+                        <option value="Empleado">Empleado</option>
+                    </select>
+                </section>
+                
                 <button type="submit">Iniciar sesión</button>
-           </form> 
-    </div>
+            </form>
+        </div>
     </div>
     <script src="/JavaScrip/login.js"></script>
 </body>
