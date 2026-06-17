@@ -44,10 +44,10 @@ function pintarTabla(civiles) {
                 </span>
             </td>
             <td>
-                <a href="resivo.html?cuenta=${civil.cuenta_no}&comunidad=${idComunidad}&accion=cobrar" class="link-cobrar">Cobrar</a>
+                <a href="../html/resivo.html?cuenta=${civil.cuenta_no}&comunidad=${idComunidad}&accion=cobrar" class="link-cobrar">Cobrar</a>
             </td>
             <td>
-                <a href="resivo.html?cuenta=${civil.cuenta_no}" class="btn-ver-recibo">Ver Recibo</a>
+                <a href="../html/resivo.html?cuenta=${civil.cuenta_no}" class="btn-ver-recibo">Ver Recibo</a>
             </td>
             <td>
                 <a href="#" onclick="editarCivil(${civil.id_ciudadano})" style="color: #000000; font-weight: bold; text-decoration: none;">EDITAR</a> | 

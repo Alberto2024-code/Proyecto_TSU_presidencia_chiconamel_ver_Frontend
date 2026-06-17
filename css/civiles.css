@@ -96,4 +96,52 @@
 }
 .delete:hover { background-color: #ffeef0; }
 
+/*apartado de tarifas*/
+.tabla-tarifa {
+    width: 98%; /* Un poco más ancha para aprovechar el espacio */
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: rgb(240, 236, 236);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08); /* Sombra más suave y moderna */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- ENCABEZADO --- */
+.tabla-tarifa thead {
+    background-color: #1a1c1e; /* Un gris casi negro más elegante */
+    color: #ffffff;
+}
+
+.tabla-tarifa th {
+    padding: 18px 15px;
+    text-align: left;
+    font-size: 0.75rem; /* Más pequeña y separada se ve más "Pro" */
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 600;
+}
+
+/* --- CELDAS --- */
+.tabla-tarifa td {
+    padding: 15px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.85rem;
+    color: #444;
+    vertical-align: middle; /* Centra el contenido verticalmente */
+}
+
+/* Efecto Cebra y Hover suave */
+.tabla-tarifa tbody tr:nth-child(even) {
+    background-color: #fcfcfc;
+}
+
+.tabla-tarifa tbody tr:hover {
+    background-color: #f1fdf4; 
+    transition: background 0.2s ease;
+}
+
+
+
 

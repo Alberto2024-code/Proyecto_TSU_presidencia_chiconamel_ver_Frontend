@@ -1,0 +1,159 @@
+/* ==========================================================================
+   ESTILOS EXCLUSIVOS PARA EL FORMULARIO DE TARIFAS
+   ========================================================================== */
+
+/* Contenedor principal que centra el formulario en la pantalla */
+.contenedor-principal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px;
+}
+
+/* Tarjeta blanca del formulario */
+.contenedor-formulario-tarifas {
+    background: #ffffff;
+    width: 100%;
+    max-width: 650px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Encabezado negro del formulario (hace juego con tu tabla) */
+.titulo-formulario {
+    background-color: #111111;
+    color: #ffffff;
+    text-align: center;
+    padding: 18px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* Espaciado interno del formulario */
+form {
+    padding: 30px;
+}
+
+/* Subtítulos de secciones (Descuentos / Penalizaciones) */
+.subtitulo-bloque {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #1b4d3e; /* Verde institucional */
+    margin: 25px 0 15px 0;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+/* Subtítulo de penalizaciones en tono rojizo sutil */
+.subtitulo-bloque.alerta {
+    text-decoration: #111111;
+    color: #c0392b;
+    border-bottom-color: #fadbd8;
+}
+
+/* Alineación vertical de cada etiqueta e input */
+.grupo-campo {
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Distribución en 2 columnas para los campos dobles */
+.fila-doble {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* Estilo de las etiquetas de texto */
+label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #555;
+}
+
+/* Control unificado para Inputs, Selects y fechas */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background-color: #fafafa;
+    color: #333;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+/* Iluminación verde cuando el usuario da clic en un campo */
+input:focus,
+select:focus {
+    border-color: #1b4d3e;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(27, 77, 62, 0.15);
+}
+
+/* Sección inferior de botones */
+.botones-accion {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eeeeee;
+}
+
+/* Botón Volver / Cancelar */
+.btn-cancelar {
+    display: inline-block;
+    text-align: center;
+    background-color: #e0e0e0;
+    color: #333333;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transition: background 0.2s ease;
+}
+
+.btn-cancelar:hover {
+    background-color: #d5d5d5;
+}
+
+/* Botón Guardar Configuración */
+.btn-guardar {
+    background-color: #1b4d3e;
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-guardar:hover {
+    background-color: #143a2f;
+}
+
+/* Adaptación para celulares */
+@media (max-width: 480px) {
+    .fila-doble {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    .botones-accion {
+        flex-direction: column-reverse;
+    }
+    .btn-cancelar, .btn-guardar {
+        width: 100%;
+    }
+}

@@ -1,12 +1,14 @@
 // 1. Declaramos la variable global al inicio
 let listarPersonalGlobal = [];
 
-const urlParams = new URLSearchParams(window.location.search); // <-- Corregido: Ahora sí existe urlParams
+const urlParams = new URLSearchParams(window.location.search); 
 const tablaPersonal = document.getElementById('tabla-Personal');
 const idPersonal = urlParams.get('comunidad');
 const buscarPersonalInput = document.getElementById('buscar-Personal');
 
-/** * @param {Array} Personal -
+/** 
+ * 
+ * * @param {Array} Personal -
 */
 function pintarTabla(Personal) {
     tablaPersonal.innerHTML = ``;
@@ -17,11 +19,10 @@ function pintarTabla(Personal) {
                 <td colspan="13" style="text-align: center; padding: 25px; color: #777; font-weight: bold;">
                     No se encontraron usuarios de personal registrados con esos criterios.
                 </td>
-            </tr>`; // <-- Corregido: Se cerró la etiqueta tr
-        return; // Detenemos la ejecución para que no intente recorrer un array vacío
+            </tr>`; 
+        return; 
     }
 
-    // <-- Corregido: .forEach con 'E' mayúscula
     Personal.forEach(personal => { 
         const fila = document.createElement('tr');
 
@@ -43,35 +44,33 @@ function pintarTabla(Personal) {
 }
 
 
-    fetch('http://localhost:3000/api/usuarios/')
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Error al conectar con el servidor');
-        }
-        return response.json();
-    })
-    .then(data => {
-        listarPersonalGlobal = data;
-        pintarTabla(listarPersonalGlobal);
-    })
-    .catch(error => {
-        console.error('Error en la petición', error);
-        tablaPersonal.innerHTML = `
-            <tr>
-                <td colspan="13" style="text-align: center; color: #d94141; padding: 25px; font-weight: bold;">
-                    Error de conexión. Asegúrate de que tu backend de Node.js esté corriendo en el puerto 3000.
-                </td>
-            </tr>`;
-    });
+fetch('http://localhost:3000/api/usuarios/')
+.then(response => {
+    if (!response.ok) {
+        throw new Error('Error al conectar con el servidor');
+    }
+    return response.json();
+})
+.then(data => {
+    listarPersonalGlobal = data;
+    pintarTabla(listarPersonalGlobal);
+})
+.catch(error => {
+    console.error('Error en la petición', error);
+    tablaPersonal.innerHTML = `
+        <tr>
+            <td colspan="13" style="text-align: center; color: #d94141; padding: 25px; font-weight: bold;">
+                Error de conexión. Asegúrate de que tu backend de Node.js esté corriendo en el puerto 3000.
+            </td>
+        </tr>`;
+});
 
 
-// Lógica del Buscador
 if (buscarPersonalInput) {
     buscarPersonalInput.addEventListener('input', (e) => {
         const textoBusqueda = e.target.value.toLowerCase().trim();
 
         const PersonalFiltrados = listarPersonalGlobal.filter(personal => {
-            // Aseguramos que los campos existan antes de usar toLowerCase() para evitar errores
             const nombre = personal.nombre || '';
             const paterno = personal.Apellido_Paterno || '';
             const materno = personal.Apellido_Materno || '';
@@ -84,4 +83,18 @@ if (buscarPersonalInput) {
 
         pintarTabla(PersonalFiltrados);
     });
+}
+
+
+function editarPersonal(id_usuario) {
+    // Te manda a la carpeta correspondiente llevando el "?edit=ID"
+    window.location.href = `../opc_Administrador/agregar_y_editar/Update-personal.html?edit=${id_usuario}`;
+}
+
+
+function eliminarPersonal(id_usuario) {
+    if(confirm('¿Seguro que deseas eliminar a este usuario?')) {
+        console.log('Eliminando usuario con ID:', id_usuario);
+        // Aquí meterás tu fetch DELETE más adelante
+    }
 }

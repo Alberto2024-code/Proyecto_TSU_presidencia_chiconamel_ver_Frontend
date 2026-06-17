@@ -43,3 +43,173 @@
     background-color: #f1fdf4; 
     transition: background 0.2s ease;
 }
+/*tabla de actualizacion*/
+/* --- Estilos para el Formulario de Usuarios --- */
+
+#encabezado-formulario {
+    text-align: center;
+    color: #2b7a78;
+    margin-top: 20px;
+    font-size: 22px;
+    text-transform: uppercase;
+}
+
+.formulario-contenedor {
+    max-width: 500px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.grupo-formulario {
+    margin-bottom: 15px;
+}
+
+.grupo-formulario label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #17252a;
+}
+
+.grupo-formulario input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box; /* Evita que el input se salga del contenedor */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.grupo-formulario input:focus {
+    border-color: #3aafa9;
+}
+
+.btn-formulario-guardar {
+    background-color: #2b7a78;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    font-size: 15px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-formulario-guardar:hover {
+    background-color: #17252a;
+}
+/*estilo de boton de insertar usuarios*/
+.insertar-usuarios
+{
+    width:190px;
+    font-display: auto;
+    font-family: 'Courier New', Courier, monospace;
+    padding: 19px;
+    border-radius: 90px;
+    
+}
+/*tarifas de tipo servicio*/
+.contenedor-formulario-tarifas {
+    max-width: 650px;
+    margin: 40px auto;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15);
+    font-family: Arial, sans-serif;
+}
+
+.titulo-formulario {
+    text-align: center;
+    color: #1b4332;
+    margin-bottom: 25px;
+    font-weight: bold;
+    font-size: 22px;
+    border-bottom: 3px solid #1b4332;
+    padding-bottom: 10px;
+}
+
+.subtitulo-bloque {
+    background-color: #1b4332;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.subtitulo-bloque.alerta {
+    background-color: #ad2828; 
+}
+
+.grupo-campo {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.grupo-campo label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+    font-size: 14px;
+}
+
+.grupo-campo input, .grupo-campo select {
+    padding: 10px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+.fila-doble {
+    display: flex;
+    gap: 15px;
+}
+
+.fila-doble .grupo-campo {
+    flex: 1;
+}
+
+.botones-accion {
+    margin-top: 30px;
+    display: flex;
+    gap: 15px;
+}
+
+.btn-guardar {
+    flex: 2;
+    background-color: #1b4332;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-cancelar {
+    flex: 1;
+    background-color: #6c757d;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    padding: 14px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+}

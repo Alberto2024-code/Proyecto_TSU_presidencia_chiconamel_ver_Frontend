@@ -22,9 +22,21 @@ document.getElementById('login').addEventListener('submit', async (e) => {
             
             alert(`¡Bienvenido, ${usuarioEncontrado.nombre}!`);
             
-           
             localStorage.setItem('usuario', JSON.stringify(usuarioEncontrado));
-            window.location.href = "../html/menu.html"; 
+            
+            // ==========================================
+            // GESTIÓN DE RUTAS POR ROL (1 o 2)
+            // ==========================================
+            if (Number(usuarioEncontrado.rol) === 1) {
+                // Si el rol es 1 (Administrador)
+                window.location.href = "../opc_Administrador/menu-admin.html"; 
+            } else if (Number(usuarioEncontrado.rol) === 2) {
+                // Si el rol es 2 (Empleado)
+                window.location.href = "../html/menu.html"; 
+            } else {
+                // Por si acaso hay algún otro rol en tu base de datos
+                window.location.href = "../html/menu.html"; 
+            }
 
         } else {
             alert('Usuario o contraseña incorrectos. Inténtalo de nuevo.');
