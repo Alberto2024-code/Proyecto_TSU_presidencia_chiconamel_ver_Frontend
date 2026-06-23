@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/Personal.css"> 
+    <link rel="stylesheet" href="/css/login.css">
+    
+    <link rel="stylesheet" href="/css/resivo.css">
+    <title>Sistema web de cobro de agua potable</title>
+    <script src="recibo.js" defer></script>
+</head>
+ 
+<body>
+
+<header> 
+    <h1>TU SISTEMA DE AGUA CONFIABLE</h1>
+    <nav>
+        <a href="../../opc_Administrador/Comunidades_adm.html"> Comunidades</a>
+        <a href="../../opc_Administrador/pagos_adm.html">pagos</a>
+        <a href="../../opc_Administrador/tipo_servicio_adm.html">Tipo servicio</a>
+        <a href="../../opc_Administrador/tipos_descuento_adm.html">Tipo descuentos</a>
+        <a href="../../opc_Administrador/resagados_adm.html">Resagados</a>
+        <a href="../../opc_Administrador/menu-admin.html">inicio</a>
+        <a href="../../opc_Administrador/usuarios.html">Usuarios</a>
+    </nav> 
+</header>
+
+    <div class="recibo-papel">
+    <div class="header-recibo">
+        <div class="logo-area">
+            <img src="../imagenes/logotipo_presidencia.png" alt="Logo" class="logo-img">
+            <div class="texto-header">
+                <h2>MUNICIPIO DE CHICONAMEL</h2>
+                <h3>TESORERÍA MUNICIPAL</h3>
+                <p>R.F.C. MCI-850101-PC6</p>
+            </div>
+        </div>
+        <div class="folio-area">
+            <div class="folio-box">
+                <span>RECIBO DE PAGO OFICIAL</span>
+                <p>RECAGUA</p>
+                <span class="num-folio" id="recibo-folio">No. --</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="titulo-central">
+        <h2>GENERAR NUEVO RECIBO DE PAGO</h2>
+    </div>
+
+    <div class="datos-cliente">
+        <div class="linea">
+            <span>Chiconamel, Ver. a</span> 
+            <span class="dato" id="fecha-dia">--</span> 
+            <span>de</span> 
+            <span class="dato" id="fecha-mes">--</span> 
+            <span>del 20</span> 
+            <span class="dato" id="fecha-anio">--</span>
+        </div>
+        <div class="linea">
+            <span>EL C:</span> 
+            <span class="dato-largo" id="cliente-nombre">Cargando datos del civil...</span>
+        </div>
+        <div class="linea">
+            <span>DOMICILIO:</span> 
+            <span class="dato-largo" id="cliente-domicilio">Cargando...</span>
+        </div>
+        <div class="linea">
+            <span>Comprobante del mes de:</span> 
+            <span class="dato" id="recibo-mes-pago">--</span> 
+            <span>Cta. No.</span> 
+            <span class="dato" id="cliente-cuenta">--</span>
+        </div>
+    </div>
+
+    <table class="tabla-recibo">
+        <thead>
+            <tr>
+                <th>CUOTA FIJA</th>
+                <th>IMPORTE</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>SERVICIO DOMÉSTICO</td><td id="imp-domestico">$ 0.00</td></tr>
+            <tr><td>SERVICIO COMERCIAL</td><td id="imp-comercial">$ 0.00</td></tr>
+            <tr><td>CONTRATO</td><td id="imp-contrato">$ 0.00</td></tr>
+            <tr><td>TOMAS DE AGUA</td><td id="imp-tomas">$ 0.00</td></tr>
+            <tr><td>REZAGOS</td><td id="imp-rezagos">$ 0.00</td></tr>
+            <tr><td>RECARGOS</td><td id="imp-recargos">$ 0.00</td></tr>
+            <tr><td>ADICIONAL</td><td id="imp-iva">$ 0.00</td></tr>
+            <tr><td>DESCUENTOS (CONDONACION)</td><td id="imp-descuento">$ 0.00</td></tr>
+            <tr class="fila-total">
+                <td><strong>TOTAL</strong></td>
+                <td id="imp-total"><strong>$ 0.00</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="importe-letra">
+        <span>IMPORTE CON LETRA:</span>
+        <span class="dato-largo" id="total-letras">Cargando...</span>
+    </div>
+
+    <div class="acciones-recibo" style="text-align:center; margin-top:30px;">
+        <button onclick="generarYGuardarRecibo()" id="btnGenerar" style="">
+             GENERAR RECIBO Y GUARDAR
+        </button>
+        <button onclick="window.history.back()" style="">
+            Cancelar
+        </button>
+    </div>
+</div>
+
+<script src="../opc_Administrador/javasrip-editar_y_agregar_opc_admin/generar-recibo.js"></script>
+</body>
+</html>

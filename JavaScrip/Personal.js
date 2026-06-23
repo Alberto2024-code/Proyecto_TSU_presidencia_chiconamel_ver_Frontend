@@ -93,8 +93,35 @@ function editarPersonal(id_usuario) {
 
 
 function eliminarPersonal(id_usuario) {
-    if(confirm('¿Seguro que deseas eliminar a este usuario?')) {
+    if (confirm('¿Seguro que deseas eliminar a este usuario?')) {
         console.log('Eliminando usuario con ID:', id_usuario);
-        // Aquí meterás tu fetch DELETE más adelante
+
+        // Hacemos la petición DELETE al backend metiendo el ID en la URL
+        fetch(`http://localhost:3000/api/usuarios/Delete/${id_usuario}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('No se pudo eliminar el usuario de la base de datos.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert(data.message); // Muestra el mensaje de éxito que configuramos en tu controlador
+
+                // ACTUALIZACIÓN EN VIVO: Filtramos el array global para quitar al usuario eliminado
+                listarPersonalGlobal = listarPersonalGlobal.filter(p => p.id_usuario !== id_usuario);
+                
+                // Volvemos a renderizar la tabla con la lista actualizada
+                pintarTabla(listarPersonalGlobal);
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error al intentar eliminar:', error);
+            alert('Hubo un error de conexión al intentar eliminar al usuario.');
+        });
     }
 }

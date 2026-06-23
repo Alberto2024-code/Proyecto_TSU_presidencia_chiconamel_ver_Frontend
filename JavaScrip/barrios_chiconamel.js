@@ -105,8 +105,9 @@ if (buscarCivilInput) {
     });
 }
 
-function editarCivil(id) {
-    console.log("Abriendo edición para el ciudadano ID:", id);
+function editarCivil(id_ciudadano) {
+    // Te manda a la carpeta correspondiente llevando el "?edit=ID"
+    window.location.href = `../opc_Administrador/agregar_y_editar/Update-civiles.html?edit=${id_ciudadano}`;
 }
 
 function eliminarCivil(id) {

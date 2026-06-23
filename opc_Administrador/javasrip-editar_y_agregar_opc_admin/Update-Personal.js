@@ -1,101 +1,87 @@
+// 1. Capturar el ID del usuario directamente desde la URL (?edit=1)
 const urlParams = new URLSearchParams(window.location.search);
-const idUsuarioEdit = urlParams.get('edit'); 
+const idUsuario = urlParams.get('edit'); 
 
-// Variables globales para preservar los datos obligatorios de la base de datos
-let passwordOriginal = "";
-let rolOriginal = 1;      // Valor por defecto en tu BD
-let estadoOriginal = "Activo"; // Valor por defecto en tu BD
+// ==========================================
+// PASO A: CARGAR LOS DATOS CUANDO SE ABRE LA PÁGINA
+// ==========================================
+async function cargarDatosUsuario() {
+    if (!idUsuario) {
+        alert("Error: No se encontró el ID del usuario en la URL.");
+        return;
+    }
 
-// Captura de elementos
-const formUsuario = document.getElementById('form-usuario');
-const tituloPagina = document.getElementById('titulo-pagina');
-const encabezadoFormulario = document.getElementById('encabezado-formulario');
-const btnGuardar = document.getElementById('btn-guardar');
-
-const inputNombre = document.getElementById('nombre');
-const inputPaterno = document.getElementById('apellido-paterno');
-const inputMaterno = document.getElementById('apellido-materno');
-const inputUsuario = document.getElementById('usuario');
-const inputPassword = document.getElementById('password');
-
-// 1. CARGAR DATOS EN MODO EDICIÓN
-document.addEventListener('DOMContentLoaded', () => {
-    if (idUsuarioEdit) {
-        tituloPagina.textContent = "Editar Usuario";
-        encabezadoFormulario.textContent = "EDITAR USUARIO EXISTENTE";
-        btnGuardar.textContent = "Actualizar Cambios";
+    try {
+        // Hacemos una petición GET al backend para traer los datos de este usuario
+        // Nota: Asegúrate de tener esta ruta GET en tu backend (ej: /api/usuarios/:id)
+        const response = await fetch(`http://localhost:3000/api/usuarios/${idUsuario}`);
         
-        fetch(`http://localhost:3000/api/usuarios/usuarios/${idUsuarioEdit}`)
-            .then(response => {
-                if (!response.ok) throw new Error('No se pudo obtener los datos del usuario');
-                return response.json();
-            })
-            .then(data => {
-                const user = Array.isArray(data) ? data[0] : data;
-                
-                inputNombre.value = user.nombre || '';
-                inputPaterno.value = user.Apellido_Paterno || '';
-                inputMaterno.value = user.Apellido_Materno || '';
-                inputUsuario.value = user.usuario || '';
-                
-                // GUARDADO DE VALORES OBLIGATORIOS DE MYSQL
-                passwordOriginal = user.password || '';
-                rolOriginal = user.rol !== undefined ? user.rol : 1;
-                estadoOriginal = user.estado || 'Activo';
-
-                inputPassword.value = passwordOriginal; 
-            })
-            .catch(error => {
-                console.error('Error al cargar datos:', error);
-                alert('Error al cargar los datos del usuario para editar.');
-            });
+        if (response.ok) {
+            const usuario = await response.json();
+            
+            // Rellenamos las cajas del formulario con la información actual de la BD
+            document.getElementById('nombre').value = usuario.nombre || '';
+            document.getElementById('apellido-paterno').value = usuario.Apellido_Paterno || '';
+            document.getElementById('apellido-materno').value = usuario.Apellido_Materno || '';
+            document.getElementById('usuario').value = usuario.usuario || '';
+            
+            if(document.getElementById('rol')) {
+                document.getElementById('rol').value = usuario.rol || '1';
+            }
+            if(document.getElementById('estado')) {
+                document.getElementById('estado').value = usuario.estado || 'Activo';
+            }
+        } else {
+            alert('No se pudieron obtener los datos actuales del usuario.');
+        }
+    } catch (error) {
+        console.error('Error al cargar datos iniciales:', error);
     }
-});
+}
 
-// 2. ENVIAR FORMULARIO CORREGIDO
-formUsuario.addEventListener('submit', (e) => {
-    e.preventDefault(); 
+// Ejecutamos la función de carga en cuanto se abre la ventana
+document.addEventListener('DOMContentLoaded', cargarDatosUsuario);
 
-    let passwordAEnviar = inputPassword.value.trim();
-    if (!passwordAEnviar) {
-        passwordAEnviar = passwordOriginal;
+
+// ==========================================
+// PASO B: GUARDAR LOS DATOS ACTUALIZADOS (Tu código original)
+// ==========================================
+document.getElementById('form-usuario').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (!idUsuario) {
+        alert("Error: No se encontró el ID del usuario en la URL.");
+        return;
     }
-  
-    // El objeto incluye ahora de forma estricta todos los campos que requiere la BD
-    const datosUsuario = {
-        nombre: inputNombre.value.trim(),
-        Apellido_Paterno: inputPaterno.value.trim(),
-        Apellido_Materno: inputMaterno.value.trim(),
-        usuario: inputUsuario.value.trim(),
-        password: passwordAEnviar,
-        rol: rolOriginal,        // Enviado de forma transparente al backend
-        estado: estadoOriginal   // Enviado de forma transparente al backend
+
+    const datosActualizados = {
+        nombre: document.getElementById('nombre').value,
+        Apellido_Paterno: document.getElementById('apellido-paterno').value,
+        Apellido_Materno: document.getElementById('apellido-materno').value,
+        usuario: document.getElementById('usuario').value,
+        rol: document.getElementById('rol') ? document.getElementById('rol').value : "1", 
+        estado: document.getElementById('estado') ? document.getElementById('estado').value : "Activo"
     };
 
-    let url = '';
-    if (idUsuarioEdit) {
-        url = `http://localhost:3000/api/usuarios/Update/${idUsuarioEdit}`;
-    } else {
-        url = 'http://localhost:3000/api/usuarios/incert';
+    try {
+        const response = await fetch(`http://localhost:3000/api/usuarios/Update/${idUsuario}`, {
+            method: 'PUT', 
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(datosActualizados)
+        });
+
+        const resultado = await response.json();
+
+        if (response.ok) {
+            alert('¡Usuario actualizado con éxito!');
+        } else {
+            alert('Error del servidor: ' + (resultado.message || 'No se pudo actualizar.'));
+        }
+
+    } catch (error) {
+        console.error('Error en la petición FETCH:', error);
+        alert('No se pudo establecer conexión con el servidor backend.');
     }
-    
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(datosUsuario)
-    })
-    .then(response => {
-        if (!response.ok) throw new Error(`Error en el servidor: ${response.status}`);
-        return response.json();
-    })
-    .then(data => {
-        alert(idUsuarioEdit ? '¡Usuario actualizado con éxito!' : '¡Usuario registrado con éxito!');
-        window.location.href = '../../html/usuarios.html'; 
-    })
-    .catch(error => {
-        console.error('Error detallado en la operación:', error);
-        alert('Hubo un error al intentar guardar los datos del usuario. Verifica que el nombre de usuario no esté duplicado.');
-    });
 });

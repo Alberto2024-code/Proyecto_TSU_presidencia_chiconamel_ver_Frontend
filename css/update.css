@@ -1,0 +1,76 @@
+/* Contenedor del Formulario */
+.form-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    margin: 20px auto;
+}
+
+/* Encabezado Verde */
+.header-green {
+    background-color: #1b4332;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    margin: -30px -30px 20px -30px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.header-green h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+/* Espaciado de las filas */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: 600;
+}
+
+/* Inputs y Selects */
+.form-group input, 
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+.form-group input:focus, 
+.form-group select:focus {
+    border-color: #2d6a4f;
+    outline: none;
+    box-shadow: 0 0 5px rgba(45, 106, 79, 0.3);
+}
+
+/* Botón Guardar */
+.btn-submit {
+    background-color: #2d6a4f;
+    color: white;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+}
+
+.btn-submit:hover {
+    background-color: #1b4332;
+}
+/**/
