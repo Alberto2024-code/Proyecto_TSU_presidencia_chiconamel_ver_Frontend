@@ -9,7 +9,7 @@
 <body>
     <header> 
         <h1>TU SISTEMA DE AGUA CONFIABLE </h1>
-        <a href="menu.html">MENU</a>
+        
     </header>
 
     <div class="contenedor">
@@ -24,18 +24,20 @@
                 <label>Usuario</label>
                 <input type="text" id="input-username" placeholder="Ingresa tu nombre de Usuario" required>
                 
-                <label>Contraseña</label>
+            <label>Contraseña</label>
+            <div class="password-container">
                 <input type="password" id="input-password" placeholder="Ingresa tu contraseña" required>
-                
+                <button type="button" id="btn-toggle-password" class="toggle-eye-btn">👁️</button>
+            </div>
                 <section>
                     <label>Tipo de usuario</label>
-                    <select id="selectRol" required>
+                    <select id="select-rol" required>
                         <option value="Administrador">Administrador</option>
                         <option value="Empleado">Empleado</option>
                     </select>
                 </section>
                 
-                <button type="submit">Iniciar sesión</button>
+                <button type="submit">Iniciar sesion</button>
             </form>
         </div>
     </div>

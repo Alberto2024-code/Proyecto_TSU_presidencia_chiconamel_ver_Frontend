@@ -35,10 +35,7 @@ header h1{
     padding: 13px;
 }
 
-/* LOGO */
-.logo img{
-    width: 400px;
-}
+
 
 /* LOGIN */
 .login{
@@ -107,8 +104,9 @@ button{
 }
 
 button:hover{
-    background: #1212b9;
+    background: #0a0a79;
     transform: translateY(-2px);
+    
 }
 /*MENU*/
 /* El contenedor principal (header) */
@@ -129,7 +127,7 @@ header h1 {
     font-size: 1.5rem;
 }
 
-/* El menú (nav) donde están tus botones */
+/* El menú donde están tus botones */
 nav {
     display: flex;
     gap: 10px;    
@@ -202,4 +200,59 @@ h1
     color: white;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     transform:scale(1.05);
+}
+/* =========================================================================
+   SOLUCIÓN DEFINITIVA: ALINEAR INPUT Y OJO EN LA MISMA LÍNEA
+   ========================================================================= */
+
+/* 1. Forzamos al contenedor a ser un flexbox en fila */
+.password-container {
+    display: flex !important;
+    flex-direction: row !important; /* Asegura que se pongan de lado a lado */
+    width: 100%;
+    align-items: stretch; 
+    margin-bottom: 10px;
+}
+
+/* 2. Forzamos al input a NO ocupar el 100% por sí solo */
+.password-container input[type="password"],
+.password-container input[type="text"] {
+    flex: 1 !important; /* Ocupa todo el espacio de la izquierda */
+    width: auto !important; /* Rompe el width: 100% general que lo bajaba */
+    margin-bottom: 0px !important; /* Quita el margen para que no se desfase con el ojo */
+    
+    /* Quitamos esquinas redondas de la derecha para unirlo al botón */
+    border-top-right-radius: 0px !important; 
+    border-bottom-right-radius: 0px !important; 
+    border-right: none !important; 
+}
+
+/* 3. Estilo del botón del ojo */
+button.toggle-eye-btn {
+    width: auto !important; 
+    height: auto !important;
+    background: #ffffff !important; 
+    color: initial !important; 
+    border: 1px solid gray !important; /* Usa el mismo color gris que tus inputs */
+    
+    /* Quitamos esquinas izquierdas para acoplarse al input */
+    border-left: none !important; 
+    border-top-right-radius: 5px !important; 
+    border-bottom-right-radius: 5px !important; 
+    border-top-left-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
+    
+    padding: 0 15px !important;
+    margin-bottom: 0px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 18px;
+    transform: none !important; 
+}
+
+/* Evitamos que el botón del ojo herede efectos raros */
+button.toggle-eye-btn:hover {
+    background: #f2f2f2 !important; 
+    transform: none !important; 
 }

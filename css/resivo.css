@@ -115,7 +115,26 @@ body {
 
 /* Configuración de impresión */
 @media print {
-    body { background: none; padding: 0; }
-    .no-print { display: none; }
-    .recibo-papel { box-shadow: none; border: none; width: 100%; }
+    /* 1. Ocultamos por completo el menú (header) y el botón verde */
+    header, 
+    nav, 
+    .no-print { 
+        display: none !important; 
+    }
+
+    /* 2. Forzamos el fondo blanco y eliminamos paddings externos */
+    body { 
+        background: none !important; 
+        padding: 0 !important; 
+        margin: 0 !important;
+    }
+
+    /* 3. Ajustamos el papel al 100% de la hoja sin sombras */
+    .recibo-papel { 
+        box-shadow: none !important; 
+        border: none !important; 
+        width: 100% !important; 
+        padding: 0 !important; 
+        margin: 0 !important;
+    }
 }

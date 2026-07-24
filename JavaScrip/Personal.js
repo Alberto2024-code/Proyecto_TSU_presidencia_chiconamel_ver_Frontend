@@ -33,6 +33,7 @@ function pintarTabla(Personal) {
         <td>${personal.Apellido_Materno || 'S/N'}</td>
         <td>${personal.usuario || 'S/N'}</td>
         <td>${personal.nombre_rol || 'S/N'}</td>
+        <td>${personal.estado || 'S/N'}</td>
         <td>
             <a href="#" onclick="editarPersonal(${personal.id_usuario})" style="color: #000000; font-weight: bold; text-decoration: none;">EDITAR</a> | 
             <a href="#" onclick="eliminarPersonal(${personal.id_usuario})" style="color: #c92a2a; font-weight: bold; text-decoration: none;">ELIMINAR</a>

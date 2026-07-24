@@ -110,12 +110,16 @@
 /*estilo de boton de insertar usuarios*/
 .insertar-usuarios
 {
-    width:190px;
+    width:200px;
     font-display: auto;
     font-family: 'Courier New', Courier, monospace;
-    padding: 19px;
+    padding: 0px;
     border-radius: 90px;
     
+}
+.insertar-usuarios:hover
+{
+    background-color:#737a81;
 }
 /*tarifas de tipo servicio*/
 .contenedor-formulario-tarifas {

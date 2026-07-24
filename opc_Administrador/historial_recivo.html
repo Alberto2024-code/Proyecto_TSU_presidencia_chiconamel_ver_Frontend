@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        if (!localStorage.getItem('token') || localStorage.getItem('token') === "undefined") {
+            alert('¡Acceso denegado! Primero debes iniciar sesión.');
+            window.location.replace("login.html"); 
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/login.css">
+    <link rel="stylesheet" href="../css/historial_recivo.css">
+    <title>Sistema wed de cobro de agua potable</title>
+</head>
+ 
+<body>
+
+    <header> <h1>TU SISTEMA DE AGUA CONFIABLE</h1>
+    
+        <nav>
+     
+           <a href="../opc_Administrador/Comunidades_adm.html"> Comunidades</a>
+        <a href="../opc_Administrador/tipo_corte_adm.html">pagos</a>
+        <a href="../opc_Administrador/tipo_servicio_adm.html">Tipo servicio</a>
+        <a href="../opc_Administrador/tipos_descuento_adm.html">Tipo descuentos</a>
+        <a href="../opc_Administrador/resagados_adm.html">Resagados</a>
+        <a href="../opc_Administrador/menu-admin.html">inicio</a>
+        <a href="../opc_Administrador/usuarios.html">Usuarios</a>
+            
+    
+    </nav> 
+</header>
+
+    <main class="contenedor-historial">
+        <h2 class="titulo-seccion">RECIBOS GENERADOS</h2>
+        
+        <div class="grid-recibos" id="contenedor-recibos"></div>
+    </main>
+    
+
+    <script src="../opc_Administrador/javasrip-editar_y_agregar_opc_admin/historial_recibo_adm.js"></script>
+</body>
+</html>

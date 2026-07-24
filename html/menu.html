@@ -1,6 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+        // 🛡️ CONTROL DE ACCESO PROFESIONAL
+        const tokenValido = localStorage.getItem('token');
+        
+        // Si el token no existe, es null, es "undefined" o está vacío
+        if (!tokenValido || tokenValido === "undefined" || tokenValido === "") {
+            
+            // Limpiamos cualquier rastro por si acaso
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+            
+            alert('¡Acceso denegado! Primero debes iniciar sesión.');
+            
+            // Intentamos redirigir de forma local o un nivel atrás si es necesario
+            // Esto asegura que encuentre el archivo login.html sí o sí
+            if (window.location.pathname.includes('/html/')) {
+                window.location.replace("login.html");
+            } else {
+                window.location.replace("login.html"); 
+            }
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/login.css">
@@ -13,8 +35,8 @@
     
         <nav>
      
-        <a href="Comunidades.html"> Comunidades</a>
-        <a href="pagos.html">pagos</a>
+         <a href="Comunidades.html"> Comunidades</a>
+        <a href="tipo_corte.html">pagos</a>
         <a href="tipo_servicio.html">Tipo servicio</a>
         <a href="tipos_descuento.html">Tipo descuentos</a>
         <a href="resagados.html">Resagados</a>

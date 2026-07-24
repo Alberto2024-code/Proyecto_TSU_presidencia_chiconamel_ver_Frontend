@@ -4,24 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/login.css">
+    <link rel="stylesheet" href="../css/civiles.css">
+    <link rel="stylesheet" href="../css/Personal.css">
     <link rel="stylesheet" href="../css/comunidades.css">
     <title>SISTEMA DE AGUA POTABLE</title>
 </head>
 <body>
     <header> <h1>TU SISTEMA DE AGUA CONFIABLE</h1>
      <nav>
-         <a href="../opc_Administrador/Comunidades_adm.html"> Comunidades</a>
-        <a href="../opc_Administrador/pagos_adm.html">pagos</a>
+        <a href="../opc_Administrador/Comunidades_adm.html"> Comunidades</a>
+        <a href="../opc_Administrador/tipo_corte_adm.html">pagos</a>
         <a href="../opc_Administrador/tipo_servicio_adm.html">Tipo servicio</a>
         <a href="../opc_Administrador/tipos_descuento_adm.html">Tipo descuentos</a>
         <a href="../opc_Administrador/resagados_adm.html">Resagados</a>
         <a href="../opc_Administrador/menu-admin.html">inicio</a>
         <a href="../opc_Administrador/usuarios.html">Usuarios</a>
+        
     </nav> </header>
     <main class="contenedor-principal">
     <div class="search-container">
         <input type="text" placeholder="Ingresa el nombre del barrio">
     </div>
+
+    <div class="insertar-usuarios">
+    <a href="../opc_Administrador/agregar_y_editar/agregar_civiles.html">
+    <button id="agregar-usuarios"> AGREGAR CIVIL + </button> 
+    </a>
+    </div>
+
    <section class="seccion-comunidades">
     <h2>BARRIOS CON SERVICIO DE AGUA POTABLE</h2>
     <div class="grid-comunidades">
@@ -37,6 +47,6 @@
     </div>
 </section>
 </main>
-<script src="../JavaScrip/barrios_chiconamel.js"></script>
+<script src="../opc_Administrador/javasrip-editar_y_agregar_opc_admin/barrios_chiconamel_adm.js"></script>
 </body>
 </html>

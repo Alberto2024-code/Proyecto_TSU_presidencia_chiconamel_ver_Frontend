@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/Personal.css"> 
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/resivo.css">
+    <title>Sistema web de cobro de agua potable</title>
+</head>
+ 
+<body>
+
+<header> 
+    <h1>TU SISTEMA DE AGUA CONFIABLE</h1>
+    <nav>
+        <a href="Comunidades.html"> Comunidades</a>
+        <a href="tipo_corte.html">pagos</a>
+        <a href="tipo_servicio.html">Tipo servicio</a>
+        <a href="tipos_descuento.html">Tipo descuentos</a>
+        <a href="resagados.html">Resagados</a>
+        <a href="menu.html">inicio</a>
+        
+    </nav> 
+</header>
+
+<div class="recibo-papel">
+    <div class="header-recibo">
+        <div class="logo-area">
+            <img src="/imagenes/logotipo_presidencia-.jpeg" alt="20px" width="220px" height="140px">
+            <div class="texto-header">
+                <h2>MUNICIPIO DE CHICONAMEL</h2>
+                <h3>TESORERÍA MUNICIPAL</h3>
+                <p>R.F.C. MCI-850101-PC6</p>
+            </div>
+        </div>
+        <div class="folio-area">
+            <div class="folio-box">
+                <span>RECIBO DE PAGO OFICIAL</span>
+                <p>RECAGUA</p>
+                <span class="num-folio" id="recibo-folio">No. --</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="titulo-central">
+        <h2>GENERAR NUEVO RECIBO DE PAGO</h2>
+    </div>
+
+    <div class="datos-cliente">
+       <div class="linea">
+            <span>Chiconamel, Ver. a</span> 
+            <span class="dato" id="fecha-dia">--</span> 
+            <span>de</span> 
+            <span class="dato" id="fecha-mes">--</span> 
+            <span>del 20</span> 
+            <span class="dato" id="fecha-anio">--</span>
+        </div>
+        <div class="linea">
+            <span>EL C:</span> 
+            <span class="dato-largo" id="cliente-nombre">Cargando datos del civil...</span>
+        </div>
+        <div class="linea">
+            <span>DOMICILIO:</span> 
+            <span class="dato-largo" id="cliente-domicilio">Cargando...</span>
+        </div>
+        <div class="seccion-meses">
+            <div class="linea" style="justify-content: space-between; align-items: center;">
+                <span><strong>Selecciona los meses a pagar:</strong></span>
+                <div>
+                    <span>Cta. No.</span> 
+                    <span class="dato" id="cliente-cuenta">--</span>
+                </div>
+            </div>
+
+            <div class="grid-meses">
+                <label class="mes-check"><input type="checkbox" value="Enero"> <span>Ene</span></label>
+                <label class="mes-check"><input type="checkbox" value="Febrero"> <span>Feb</span></label>
+                <label class="mes-check"><input type="checkbox" value="Marzo"> <span>Mar</span></label>
+                <label class="mes-check"><input type="checkbox" value="Abril"> <span>Abr</span></label>
+                <label class="mes-check"><input type="checkbox" value="Mayo"> <span>May</span></label>
+                <label class="mes-check"><input type="checkbox" value="Junio"> <span>Jun</span></label>
+                <label class="mes-check"><input type="checkbox" value="Julio"> <span>Jul</span></label>
+                <label class="mes-check"><input type="checkbox" value="Agosto"> <span>Ago</span></label>
+                <label class="mes-check"><input type="checkbox" value="Septiembre"> <span>Sep</span></label>
+                <label class="mes-check"><input type="checkbox" value="Octubre"> <span>Oct</span></label>
+                <label class="mes-check"><input type="checkbox" value="Noviembre"> <span>Nov</span></label>
+                <label class="mes-check"><input type="checkbox" value="Diciembre"> <span>Dic</span></label>
+            </div>
+        </div>
+    </div>
+
+    <table class="tabla-recibo">
+        <thead>
+            <tr>
+                <th>CUOTA FIJA</th>
+                <th>IMPORTE</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>SERVICIO DOMESTICO</td><td>$ <input type="number" id="imp-domestico" value="0.00" step="0.01" style="text-align: right; width: 100px;"></td></tr>
+            <tr><td>SERVICIO COMERCIAL</td><td>$ <input type="number" id="imp-comercial" value="0.00" step="0.01" style="text-align: right; width: 100px;"></td></tr>
+            <tr><td>CONTRATO</td><td>$ <input type="number" id="imp-contrato" value="0.00" step="0.01" style="text-align: right; width: 100px;"></td></tr>
+            <tr><td>TOMAS DE AGUA</td><td><input type="number" id="imp-tomas" value="1" style="width: 50px; text-align: center;"></td></tr>
+            <tr><td>REZAGOS</td><td>$ <input type="number" id="imp-rezagos" value="0.00" step="0.01" style="text-align: right; width: 100px;"></td></tr>
+            <tr><td>RECARGOS</td><td>$ <input type="number" id="imp-recargos" value="0.00" step="0.01" style="text-align: right; width: 100px;"></td></tr>
+            <tr><td>ADICIONAL (IVA)</td><td>$ <input type="number" id="imp-iva" value="0.00" step="0.01" style="text-align: right; width: 100px;"></td></tr>
+            <tr><td>DESCUENTOS (CONDONACION)</td><td>$ <input type="number" id="imp-descuento" value="0.00" step="0.01" style="text-align: right; width: 100px;"></td></tr>
+            <tr class="fila-total">
+                <td><strong>TOTAL</strong></td>
+                <td id="imp-total"><strong>$ 0.00</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="importe-letra">
+        <span>IMPORTE CON LETRA:</span>
+        <span class="dato-largo" id="total-letras">Cargando...</span>
+    </div>
+    <div class="footer-recibo">
+        <div class="sat-box">
+            <div class="fake-qr"></div>
+            <small>EFECTOS FISCALES AL PAGO</small>
+            <img src="../../imagenes/codigoQR_de_la_wed_chiconamel.png" alt="50px" width="90px">
+        </div>
+        <div class="firma-box">
+            <div class="espacio-firma"></div>
+            <span>SELLO Y FIRMA</span>
+        </div>
+    </div>
+
+    <p class="nota-legal">LA REPRODUCCION NO AUTORIZADA DE ESTE COMPROBANTE CAUSA UN DELITO EN LOS TÉRMINOS DE LAS DISPOSICIONES FISCALES.</p>
+
+    <div class="acciones-recibo no-print" style="text-align:center; margin-top:30px;">
+        
+        <button id="btnGenerar">
+             GENERAR RECIBO Y GUARDAR
+        </button>
+        <button class="no-print" onclick="window.print()">Imprimir Recibo</button>
+        <button onclick="window.history.back()">
+             Cancelar
+        </button>
+    </div>
+
+</div>
+
+<script src="../../JavaScrip/recibo_configurar_manual.js"></script>
+</body>
+</html>

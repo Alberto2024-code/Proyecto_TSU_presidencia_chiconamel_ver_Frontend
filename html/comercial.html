@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/login.css">
+    <link rel="stylesheet" href="../css/domestico.css">
+    <title>Sistema wed de cobro de agua potable</title>
+</head>
+ 
+<body>
+
+    <header> 
+        <h1>TU SISTEMA DE AGUA CONFIABLE</h1>
+        <nav>
+          <a href="Comunidades.html"> Comunidades</a>
+        <a href="tipo_corte.html">pagos</a>
+        <a href="tipo_servicio.html">Tipo servicio</a>
+        <a href="tipos_descuento.html">Tipo descuentos</a>
+        <a href="resagados.html">Resagados</a>
+        <a href="menu.html">inicio</a>
+        </nav> 
+    </header>
+<div class="search-container">
+        <input type="text" placeholder="Ingresa el nombre del civil">
+    </div>
+    <main class="content">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>NOMBRE</th>
+                        <th>APELLIDO PATERNO</th>
+                        <th>APELLIDO MATERNO</th>
+                        <th>CUENTA_NO</th>
+                        <th>COMUNIDAD</th>
+                        <th>DOMICILIO</th>
+                        <th>TIPO SERVICIO</th>
+                        <th>ESTADO</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-usuarios"></tbody>
+            </table>
+        </div>
+    </main>
+    
+    <script src="../JavaScrip/comercial.js"></script>
+</body>
+</html>

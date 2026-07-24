@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        if (!localStorage.getItem('token') || localStorage.getItem('token') === "undefined") {
+            alert('¡Acceso denegado! Primero debes iniciar sesión.');
+            window.location.replace("login.html"); 
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/login.css">
+    <link rel="stylesheet" href="../css/historial_recivo.css">
+    <title>Sistema wed de cobro de agua potable</title>
+</head>
+ 
+<body>
+
+    <header> <h1>TU SISTEMA DE AGUA CONFIABLE</h1>
+    
+        <nav>
+     
+       <a href="Comunidades.html"> Comunidades</a>
+        <a href="tipo_corte.html">pagos</a>
+        <a href="tipo_servicio.html">Tipo servicio</a>
+        <a href="tipos_descuento.html">Tipo descuentos</a>
+        <a href="resagados.html">Resagados</a>
+        <a href="menu.html">inicio</a>
+
+    
+    </nav> 
+</header>
+
+    <main class="contenedor-historial">
+        <h2 class="titulo-seccion">RECIBOS GENERADOS</h2>
+        
+        <div class="grid-recibos" id="contenedor-recibos"></div>
+    </main>
+    
+
+    <script src="../JavaScrip/historial_recibo.js"></script>
+</body>
+</html>

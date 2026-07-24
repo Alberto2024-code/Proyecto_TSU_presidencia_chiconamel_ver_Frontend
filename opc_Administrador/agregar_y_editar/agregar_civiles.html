@@ -15,13 +15,14 @@
     <header> 
         <h1>TU SISTEMA DE AGUA CONFIABLE</h1>
         <nav>
-            <a href="../../opc_Administrador/Comunidades_adm.html">Comunidades</a>
-            <a href="../../opc_Administrador/pagos_adm.html">pagos</a>
-            <a href="../../opc_Administrador/tipo_servicio_adm.html">Tipo servicio</a>
-            <a href="../../opc_Administrador/tipos_descuento_adm.html">Tipo descuentos</a>
-            <a href="../../opc_Administrador/resagados_adm.html">Resagados</a>
-            <a href="../../opc_Administrador/menu-admin.html">inicio</a>
-            <a href="../../opc_Administrador/usuarios.html">Usuarios</a>
+           <a href="../../opc_Administrador/Comunidades_adm.html"> Comunidades</a>
+        <a href="../../opc_Administrador/tipo_corte_adm.html">pagos</a>
+        <a href="../../opc_Administrador/tipo_servicio_adm.html">Tipo servicio</a>
+        <a href="../../opc_Administrador/tipos_descuento_adm.html">Tipo descuentos</a>
+        <a href="../../opc_Administrador/resagados_adm.html">Resagados</a>
+        <a href="../../opc_Administrador/menu-admin.html">inicio</a>
+        <a href="../../opc_Administrador/usuarios.html">Usuarios</a>
+          
         </nav> 
     </header>
 
@@ -33,27 +34,36 @@
         <form id="formUsuario">
             <div class="form-group">
                 <label for="nombre">Nombre:</label>
-                <input type="text" id="nombre" required placeholder="Ingresa el nombre del civil" > 
+                <input  style="text-transform: uppercase;" id="nombre" required placeholder="Ingresa el nombre del civil" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo se permiten letras" > 
             </div>
 
             <div class="form-group">
                 <label for="apellido_paterno">Apellido Paterno:</label>
-                <input type="text" id="apellido_paterno" required placeholder="Ingresa el apellido paterno del civil">
+                <input style="text-transform: uppercase;" id="apellido_paterno" required placeholder="Ingresa el apellido paterno del civil" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo se permiten letras">
             </div>
 
             <div class="form-group">
                 <label for="apellido_materno">Apellido Materno:</label>
-                <input type="text" id="apellido_materno" placeholder="Ingresa el apellido materno del civil">
+                <input style="text-transform: uppercase;" id="apellido_materno" placeholder="Ingresa el apellido materno del civil"pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo se permiten letras">
             </div>
 
             <div class="form-group">
-                <label for="domicilio">Ingresa el domicilio:</label>
-                <input type="text" id="domicilio" required placeholder="ejemplo:5 DE MAYO">
+                <label for="comunidad">Selecciona su comunidad:</label>
+                <select id="comunidad" required>
+                <option value="">Cargando comunidades...</option>
+                </select>
             </div>
 
             <div class="form-group">
-                <label for="cuenta-no">Ingresa cuenta numero de cuenta:</label>
-                <input type="number" id="cuenta-no" required placeholder="Este numero no debe de ser igual que un numero ya creado">
+                <label for="domicilio">Selecciona el domicilio:</label>
+                <select id="domicilio" required>
+                <option value="">Cargando calles...</option>
+                 </select>
+            </div>
+
+            <div class="form-group">
+                <label for="cuenta-no">Ingresa un numero de cuenta no igual a uno ya creado:</label>
+                <input type="number" id="cuenta-no" required placeholder="INGRESA UN NUMERO NO REPETIDO">
             </div>
             <div class="form-group">
                 <label for="tipo_servicio">Tipo servicio:</label>
@@ -69,21 +79,10 @@
                     <option value="2">Innactivo</option>
                 </select>
             </div>
-            <div class="form-group">
-            <label for="comunidad">Selecciona su comunidad:</label>
-            <select id="comunidad" required>
-            <option value="">Cargando comunidades...</option>
-            </select>
-             </div>
-            
-
-            <div class="form-group">
-                <label for="curd">Ingresa la CURD</label>
-                <input type="text" id="curd" required placeholder="Ingresa la curd del usuario" > 
-            </div>
             
             
 
+            
             <button type="submit" class="btn-submit">Guardar Usuario</button>
         </form>
     </div>

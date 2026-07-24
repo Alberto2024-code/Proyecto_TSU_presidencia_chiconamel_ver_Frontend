@@ -10,61 +10,41 @@
  
 <body>
 
-    <header> <h1>TU SISTEMA DE AGUA CONFIABLE</h1>
-    
+    <header> 
+        <h1>TU SISTEMA DE AGUA CONFIABLE</h1>
         <nav>
-     
-        <a href="Comunidades.html"> Comunidades</a>
-        <a href="pagos.html">pagos</a>
+          <a href="Comunidades.html"> Comunidades</a>
+        <a href="tipo_corte.html">pagos</a>
         <a href="tipo_servicio.html">Tipo servicio</a>
         <a href="tipos_descuento.html">Tipo descuentos</a>
         <a href="resagados.html">Resagados</a>
         <a href="menu.html">inicio</a>
-    
-    </nav> 
-</header>
-<main class="content">
+        </nav> 
+    </header>
+<div class="search-container">
+        <input type="text" placeholder="Ingresa el nombre del civil">
+    </div>
+    <main class="content">
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
+                        <th>ID</th>
                         <th>NOMBRE</th>
                         <th>APELLIDO PATERNO</th>
                         <th>APELLIDO MATERNO</th>
-                        <th>TELEFONO</th>
-                        <th>DOMICILIO</th>
                         <th>CUENTA_NO</th>
+                        <th>COMUNIDAD</th>
+                        <th>DOMICILIO</th>
                         <th>TIPO SERVICIO</th>
                         <th>ESTADO</th>
-                        <th>COMUNIDAD</th>
-                        <th>FECHA REGISTRO</th>
-                        <th>RESIVO</th>
-                        <th>ACCIONES</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>JESUS</td>
-                        <td>HERNANDEZ</td>
-                        <td>CRUZ</td>
-                        <td>7711234567</td>
-                        <td>787 0066</td>
-                        <td>09</td>
-                        <td>DOMESTICO</td>
-                        <td>ACTIVO</td>
-                        <td>TALTAMAYA</td>
-                        <td>06-05-2026</td>
-                        <td>
-                            <a href="#" class="btn-recibo">📄 Ver Recibo</a>
-                        </td>
-                        <td>
-                            <a href="#" class="link-acciones">ELIMINAR/EDITAR</a>
-                        </td>
-                    </tr>
-                </tbody>
+                <tbody id="tabla-usuarios"></tbody>
             </table>
         </div>
     </main>
     
+    <script src="../JavaScrip/domestico.js"></script>
 </body>
 </html>

@@ -1,0 +1,123 @@
+/* ==========================================================================
+   ESTILOS BASE DEL BODY (Fondo general del sistema)
+   ========================================================================== */
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f6f9; /* Fondo grisáceo claro para resaltar tus recibos */
+    color: #333;
+}
+
+/* Asegura que el box-sizing se aplique a todo el contenido del cuerpo */
+body * {
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   SECCIÓN CONTENEDORA DEL HISTORIAL
+   ========================================================================== */
+.contenedor-historial {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.titulo-seccion {
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+    margin-bottom: 35px;
+    color: #222;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* ==========================================================================
+   REJILLA DE TARJETAS (Grid Dinámico Automático)
+   ========================================================================== */
+.grid-recibos {
+    display: grid;
+    /* Genera columnas de mínimo 200px automáticamente según el ancho de la pantalla */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 25px;
+    justify-content: center;
+    align-items: start;
+}
+
+/* ==========================================================================
+   ESTILO DE LAS TARJETAS DE RECIBO
+   ========================================================================== */
+.tarjeta-recibo {
+    background-color: #ffffff;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Efecto al pasar el mouse por encima de la tarjeta */
+.tarjeta-recibo:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+    border-color: #bbb;
+}
+
+/* Cuadro interior que simula la miniatura del documento */
+.contenedor-miniatura {
+    background-color: #f8f9fa;
+    border: 1px dashed #cccccc;
+    border-radius: 4px;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+}
+
+/* Textos informativos de cada recibo */
+.info-recibo {
+    width: 100%;
+    text-align: center;
+}
+
+.info-recibo h3 {
+    color: #2b2b2b;
+    font-size: 14px;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.info-recibo p {
+    margin: 4px 0;
+}
+
+/* ==========================================================================
+   BOTÓN AZUL DE ACCIÓN (Ver / Imprimir)
+   ========================================================================== */
+.btn-descargar {
+    display: block;
+    text-decoration: none;
+    background-color: #0b2b5c; /* Azul rey oscuro oficial de tus botones */
+    color: white;
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-top: 15px;
+    width: 100%;
+    transition: background-color 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-descargar:hover {
+    background-color: #051630; /* Tono más oscuro al hacer hover */
+}

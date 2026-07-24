@@ -31,28 +31,26 @@ function pintarTabla(civiles) {
         fila.innerHTML = `
             <td>${civil.id_ciudadano || 'S/N'}</td>
             <td>${civil.nombre}</td>
-            <td>${civil.apellido_paterno || ''}</td>
-            <td>${civil.apellido_materno || ''}</td>
+            <td>${civil.apellido_paterno || 'S/N'}</td>
+            <td>${civil.apellido_materno || 'S/N'}</td>
             <td>${civil.cuenta_no || 'S/N'}</td>
-            <td>${civil.curd || 'S/N'}</td>
             <td>${civil.domicilio || 'Conocido'}</td>
-            <td>${civil.tipo_servicio || 'Domestico'}</td>
-            <td>${civil.id_comunidad || 's/n'}</td>
+            <td>${civil.nombre_servicio || 'Domestico'}</td>
+            <td>${civil.nombre_comunidad || 's/n'}</td>
             <td>
                 <span class="badge-${civil.estado === 'Activo' ? 'activo' : 'inactivo'}">
                     ${civil.estado || 'Activo'}
                 </span>
             </td>
             <td>
-                <a href="../html/resivo.html?cuenta=${civil.cuenta_no}&comunidad=${idComunidad}&accion=cobrar" class="link-cobrar">Cobrar</a>
+            
+                
+            <a href="../../html/generar_recibo_empleado.html?cuenta=${civil.cuenta_no}&comunidad=${idComunidad}&accion=cobrar" class="link-cobrar">Cobrar</a>
             </td>
             <td>
-                <a href="../html/resivo.html?cuenta=${civil.cuenta_no}" class="btn-ver-recibo">Ver Recibo</a>
-            </td>
-            <td>
-                <a href="#" onclick="editarCivil(${civil.id_ciudadano})" style="color: #000000; font-weight: bold; text-decoration: none;">EDITAR</a> | 
-                <a href="#" onclick="eliminarCivil(${civil.id_ciudadano})" style="color: #c92a2a; font-weight: bold; text-decoration: none;">ELIMINAR</a>
-            </td>
+               <a href="../../html/historial_recibo_empleado.html?id=${civil.id_ciudadano}" class="btn-ver-recibo">Ver Historial</a>
+                </td>
+           
         `;
         
         tablaUsuarios.appendChild(fila);
@@ -107,11 +105,34 @@ if (buscarCivilInput) {
 
 function editarCivil(id_ciudadano) {
     // Te manda a la carpeta correspondiente llevando el "?edit=ID"
-    window.location.href = `../opc_Administrador/agregar_y_editar/Update-civiles.html?edit=${id_ciudadano}`;
+    window.location.href = `../opc_Administrador/agregar_y_editar/Update_civiles-adm.html?edit=${id_ciudadano}`;
 }
 
-function eliminarCivil(id) {
+async function eliminarCivil(id) {
     if (confirm('¿Estás seguro de que deseas eliminar este registro?')) {
         console.log("Eliminando ciudadano ID:", id);
+        
+        try {
+            const response = await fetch(`http://localhost:3000/api/civiles/Delete/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('¡Ciudadano eliminado con éxito!');
+                location.reload(); // Recarga la tabla de manera nativa para actualizar la lista
+            } else {
+                // Muestra la validación controlada del Backend (ej: si tiene recibos vinculados)
+                alert(`Error en el servidor: ${data.message || 'No se pudo eliminar el registro.'}`);
+            }
+
+        } catch (error) {
+            console.error('Error crítico al intentar eliminar civil:', error);
+            alert('Hubo un error de conexión con el servidor. Revisa la consola.');
+        }
     }
 }

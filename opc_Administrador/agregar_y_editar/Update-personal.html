@@ -14,8 +14,8 @@
     
         <nav>
      
-          <a href="../../opc_Administrador/Comunidades_adm.html"> Comunidades</a>
-        <a href="../../opc_Administrador/pagos_adm.html">pagos</a>
+           <a href="../../opc_Administrador/Comunidades_adm.html"> Comunidades</a>
+        <a href="../../opc_Administrador/tipo_corte_adm.html">pagos</a>
         <a href="../../opc_Administrador/tipo_servicio_adm.html">Tipo servicio</a>
         <a href="../../opc_Administrador/tipos_descuento_adm.html">Tipo descuentos</a>
         <a href="../../opc_Administrador/resagados_adm.html">Resagados</a>
@@ -37,29 +37,29 @@
             
             <div class="grupo-formulario">
                 <label for="nombre">Nombre:</label>
-                <input type="text" id="nombre" required>
+                <input style="text-transform: uppercase;" id="nombre" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo se permiten letras">
             </div>
 
             <div class="grupo-formulario">
                 <label for="apellido-paterno">Apellido Paterno:</label>
-                <input type="text" id="apellido-paterno" required>
+                <input style="text-transform: uppercase;" id="apellido-paterno" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo se permiten letras">
             </div>
 
             <div class="grupo-formulario">
                 <label for="apellido-materno">Apellido Materno:</label>
-                <input type="text" id="apellido-materno" required>
+                <input style="text-transform: uppercase;" id="apellido-materno" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo se permiten letras">
             </div>
 
             <div class="grupo-formulario">
                 <label for="usuario">Nombre de Usuario :</label>
-                <input type="text" id="usuario" required>
+                <input style="text-transform: uppercase;" id="usuario" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="solo se permiten letras">
             </div>
 
             <div class="grupo-formulario">
                 <label for="rol">Rol del Usuario:</label>
                 <select id="rol" required>
-                    <option value="1">Administrador (1)</option>
-                    <option value="2">Empleado / Operador (2)</option>
+                    <option value="1">Administrador </option>
+                    <option value="2">Empleado </option>
                 </select>
             </div>
 

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/login.css">
+    <link rel="stylesheet" href="../css/civiles.css">
     <title>Sistema wed de cobro de agua potable</title>
 </head>
  
@@ -13,8 +14,8 @@
     
         <nav>
      
-          <a href="../opc_Administrador/Comunidades_adm.html"> Comunidades</a>
-        <a href="../opc_Administrador/pagos_adm.html">pagos</a>
+        <a href="../opc_Administrador/Comunidades_adm.html"> Comunidades</a>
+        <a href="../opc_Administrador/tipo_corte_adm.html">pagos</a>
         <a href="../opc_Administrador/tipo_servicio_adm.html">Tipo servicio</a>
         <a href="../opc_Administrador/tipos_descuento_adm.html">Tipo descuentos</a>
         <a href="../opc_Administrador/resagados_adm.html">Resagados</a>
@@ -24,6 +25,34 @@
     
     </nav> 
 </header>
+<div class="search-container">
+        <input type="text" id="buscar-rezagado" placeholder="Ingresa el nombre del usuario">
+    </div>
+
+    <table class="tabla-usuarios">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>NOMBRE</th>
+                <th>APELLIDO PATERNO</th>
+                <th>APELLIDO MATERNO</th>
+                <th>CUENTA_NO</th>
+                <th>COMUNIDAD</th>
+                <th>DOMICILIO</th>
+                <th>TIPO SERVICIO</th>
+                <th>MONTO</th>
+                <th>CONDONACION</th>
+                <th>MESES PAGADOS(ANUAL)</th>
+                
+                
+                
+            </tr>
+        </thead>
+        <tbody id="tabla-rezagados">
+            </tbody>
+    </table>
+
+    <script src="../../JavaScrip/pagos_anuales.js"></script>
 
 
     

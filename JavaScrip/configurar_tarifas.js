@@ -48,8 +48,7 @@ async function cargarTarifasEnTabla() {
                 <td>${fTermino}</td>
                 <td>${tarifa.porcentaje}%</td>
                  <td>
-                <a href="../opc_Administrador/agregar_y_editar/configuras_tarifas.html" onclick="editarCivil(${tarifa.id_ciudadano})" style="color: #000000; font-weight: bold; text-decoration: none;">CONFIGURAR</a>  
-               
+               <a href="../opc_Administrador/agregar_y_editar/Update_configuras_tarifas.html?id=${tarifa.id_tarifa}" style="color: #000000; font-weight: bold; text-decoration: none;">CONFIGURAR</a>
             </td>
             `;
 
