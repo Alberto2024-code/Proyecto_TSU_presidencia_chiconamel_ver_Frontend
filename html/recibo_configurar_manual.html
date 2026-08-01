@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+<link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/Personal.css"> 
     <link rel="stylesheet" href="/css/login.css">
     <link rel="stylesheet" href="/css/resivo.css">
@@ -23,7 +25,6 @@
         
     </nav> 
 </header>
-
 <div class="recibo-papel">
     <div class="header-recibo">
         <div class="logo-area">
@@ -48,7 +49,7 @@
     </div>
 
     <div class="datos-cliente">
-       <div class="linea">
+        <div class="linea">
             <span>Chiconamel, Ver. a</span> 
             <span class="dato" id="fecha-dia">--</span> 
             <span>de</span> 
@@ -67,6 +68,25 @@
         <div class="seccion-meses">
             <div class="linea" style="justify-content: space-between; align-items: center;">
                 <span><strong>Selecciona los meses a pagar:</strong></span>
+                
+                <!-- 📅 SELECTOR DEL AÑO FISCAL CORRESPONDIENTE -->
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <label for="select-anio"><strong>Año a cobrar:</strong></label>
+                    <select id="select-anio" style="padding: 4px 8px; font-weight: bold; border-radius: 4px; border: 1px solid #ccc; background-color: #fff;">
+                        <option value="2020">2020</option>
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>
+                        <option value="2023">2023</option>
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026" selected>2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                        <option value="2030">2030</option>
+                    </select>
+                </div>
+
                 <div>
                     <span>Cta. No.</span> 
                     <span class="dato" id="cliente-cuenta">--</span>
@@ -98,13 +118,13 @@
             </tr>
         </thead>
         <tbody>
-            <tr><td>SERVICIO DOMESTICO</td><td>$ <input type="number" id="imp-domestico" value="0.00" step="0.01" style="text-align: right; width: 100px;"></td></tr>
-            <tr><td>SERVICIO COMERCIAL</td><td>$ <input type="number" id="imp-comercial" value="0.00" step="0.01" style="text-align: right; width: 100px;"></td></tr>
+            <tr><td>SERVICIO DOMÉSTICO</td><td id="imp-domestico">$ 0.00</td></tr>
+            <tr><td>SERVICIO COMERCIAL</td><td id="imp-comercial">$ 0.00</td></tr>
             <tr><td>CONTRATO</td><td>$ <input type="number" id="imp-contrato" value="0.00" step="0.01" style="text-align: right; width: 100px;"></td></tr>
-            <tr><td>TOMAS DE AGUA</td><td><input type="number" id="imp-tomas" value="1" style="width: 50px; text-align: center;"></td></tr>
+            <tr><td>TOMAS DE AGUA</td><td><input type="number" id="imp-tomas" value="1" readonly disabled style="width: 50px; text-align: center; background-color: #e9ecef; cursor: not-allowed;"></td></tr>
             <tr><td>REZAGOS</td><td>$ <input type="number" id="imp-rezagos" value="0.00" step="0.01" style="text-align: right; width: 100px;"></td></tr>
             <tr><td>RECARGOS</td><td>$ <input type="number" id="imp-recargos" value="0.00" step="0.01" style="text-align: right; width: 100px;"></td></tr>
-            <tr><td>ADICIONAL (IVA)</td><td>$ <input type="number" id="imp-iva" value="0.00" step="0.01" style="text-align: right; width: 100px;"></td></tr>
+            <tr><td>ADICIONAL </td><td>$ <input type="number" id="imp-iva" value="0.00" step="0.01" style="text-align: right; width: 100px;"></td></tr>
             <tr><td>DESCUENTOS (CONDONACION)</td><td>$ <input type="number" id="imp-descuento" value="0.00" step="0.01" style="text-align: right; width: 100px;"></td></tr>
             <tr class="fila-total">
                 <td><strong>TOTAL</strong></td>
@@ -132,18 +152,13 @@
     <p class="nota-legal">LA REPRODUCCION NO AUTORIZADA DE ESTE COMPROBANTE CAUSA UN DELITO EN LOS TÉRMINOS DE LAS DISPOSICIONES FISCALES.</p>
 
     <div class="acciones-recibo no-print" style="text-align:center; margin-top:30px;">
-        
-        <button id="btnGenerar">
-             GENERAR RECIBO Y GUARDAR
-        </button>
+        <button id="btnGenerar">GENERAR RECIBO Y GUARDAR</button>
         <button class="no-print" onclick="window.print()">Imprimir Recibo</button>
-        <button onclick="window.history.back()">
-             Cancelar
-        </button>
+        <button onclick="window.history.back()">Cancelar</button>
     </div>
 
 </div>
-
+<script src="../JavaScrip/bootstrap.bundle.min.js"></script>
 <script src="../../JavaScrip/recibo_configurar_manual.js"></script>
 </body>
 </html>

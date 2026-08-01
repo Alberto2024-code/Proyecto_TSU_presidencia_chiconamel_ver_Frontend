@@ -10,16 +10,16 @@ document.addEventListener('DOMContentLoaded', () => {
     formUsuario.addEventListener('submit', async (e) => {
         e.preventDefault(); // Evita recargar la página
 
-        const nombreComunidad = inputNombre.value.trim().toUpperCase();
+        const domicilio = inputNombre.value.trim().toUpperCase();
 
-        if (!nombreComunidad) {
-            alert('Por favor, ingresa un nombre válido para la comunidad.');
+        if (!domicilio) {
+            alert('Por favor, ingresa un nombre válido para el domicilio.');
             return;
         }
 
-        // Estructura JSON enviando la propiedad 'nombre_comunidad'
+        // Estructura JSON enviando la propiedad 'domicilio'
         const datosEnvio = {
-            nombre_comunidad: nombreComunidad
+            domicilio: domicilio
         };
 
         const btnSubmit = formUsuario.querySelector('.btn-submit');
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Petición POST al endpoint de creación
-            const response = await fetch('http://localhost:3000/api/comunidades/create_comunidad', {
+            const response = await fetch('http://localhost:3000/api/comunidades/create_domicilio', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -42,15 +42,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                alert('¡Comunidad guardada exitosamente!');
+                alert('¡Domicilio guardado exitosamente!');
                 formUsuario.reset();
-                // Redireccionar al catálogo principal de comunidades
+                // Redireccionar al catálogo principal de domicilios
                 window.location.href = '../../opc_Administrador/Comunidades_adm.html';
             } else {
-                alert(`Atención: ${data.message || data.error || 'No se pudo guardar la comunidad.'}`);
+                alert(`Atención: ${data.message || data.error || 'No se pudo guardar el domicilio.'}`);
                 if (btnSubmit) {
                     btnSubmit.disabled = false;
-                    btnSubmit.textContent = 'Guardar Comunidad';
+                    btnSubmit.textContent = 'Guardar Domicilio';
                 }
             }
 
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Error al conectar con el servidor API.');
             if (btnSubmit) {
                 btnSubmit.disabled = false;
-                btnSubmit.textContent = 'Guardar Comunidad';
+                btnSubmit.textContent = 'Guardar Domicilio';
             }
         }
     });

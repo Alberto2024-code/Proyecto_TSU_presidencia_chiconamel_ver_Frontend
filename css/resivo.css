@@ -138,3 +138,116 @@ body {
         margin: 0 !important;
     }
 }
+ body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background-color: #e2e8f0; /* Fondo gris suave para resaltar el recibo */
+        }
+
+        .bg-verde-chiconamel {
+            background-color: #1b4d3e !important; /* Tono verde de tu sistema */
+        }
+
+        /* Regla de impresión: oculta la barra superior y los botones al imprimir */
+        @media print {
+            header, .no-print {
+                display: none !important;
+            }
+        }
+         html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            top: 0 !important;
+        }
+
+        /* Fuerza al header a pegarse al techo exacto de la pantalla */
+        header.mi-encabezado-fix {
+            margin-top: 0 !important;
+            padding-top: 12px !important;
+            padding-bottom: 12px !important;
+            background-color: #1b4d3e !important; /* Verde oficial */
+            width: 100% !important;
+        }
+
+        /* Estilo EXACTO para los botones transparentes con borde blanco */
+        header.mi-encabezado-fix nav a.btn-menu-custom {
+            color: #ffffff !important;
+            background-color: transparent !important;
+            border: 1px solid #ffffff !important;
+            border-radius: 50px !important;
+            padding: 5px 18px !important;
+            font-size: 14px !important;
+            text-decoration: none !important;
+            display: inline-block;
+            transition: all 0.2s ease;
+        }
+
+        /* Efecto cuando pasas el mouse por encima */
+        header.mi-encabezado-fix nav a.btn-menu-custom:hover {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            color: #ffffff !important;
+        }
+
+        /* Estilo EXACTO para el botón activo ("inicio") */
+        header.mi-encabezado-fix nav a.btn-menu-custom.activo {
+            background-color: #ffffff !important;
+            color: #1b4d3e !important;
+            font-weight: bold !important;
+            border-color: #ffffff !important;
+        }
+@media print {
+    /* 1. Hoja carta con márgenes mínimos para aprovechar el espacio */
+    @page {
+        size: letter portrait;
+        margin: 8mm !important;
+    }
+
+    /* 2. Ocultar lo que no debe imprimirse */
+    header, .no-print, nav, button {
+        display: none !important;
+    }
+
+    body {
+        background: white !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        -webkit-print-color-adjust: exact;
+    }
+
+    /* 3. El contenedor recupera su tamaño cómodo */
+    .recibo-papel {
+        box-shadow: none !important;
+        border: none !important;
+        margin: 0 auto !important;
+        padding: 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        page-break-inside: avoid !important;
+    }
+
+    /* 4. Tabla con espacio cómodo (como en la Foto 2) */
+    .tabla-recibo th, 
+    .tabla-recibo td {
+        padding: 6px 10px !important; /* Espaciado normal de celdas */
+        font-size: 13px !important;  /* Tamaño legible original */
+    }
+
+    /* 5. Separaciones naturales de elementos */
+    .header-recibo {
+        margin-bottom: 15px !important;
+    }
+
+    .datos-cliente {
+        margin-bottom: 15px !important;
+        line-height: 1.6 !important; /* Desapachurra las líneas de texto */
+    }
+
+    .footer-recibo {
+        margin-top: 25px !important; /* Separa el QR y la firma hacia abajo */
+    }
+
+    .nota-legal {
+        font-size: 10px !important;
+        margin-top: 15px !important;
+    }
+}

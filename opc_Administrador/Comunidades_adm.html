@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/bootstrap.min.css"> 
+    
     <link rel="stylesheet" href="../css/login.css">
     <link rel="stylesheet" href="../css/comunidades.css">
+    <link rel="stylesheet" href="../css/Personal.css">
     <title>SISTEMA DE AGUA POTABLE</title>
 </head>
 <body>
@@ -23,7 +26,14 @@
     <div class="search-container">
         <input type="text" placeholder="Ingresa el nombre de la comunidad">
     </div>
-
+ <div class="insertar-usuarios">
+    
+    <a href="../opc_Administrador/agregar_y_editar/agregar_civiles.html">
+    <button id="agregar-usuarios"> AGREGAR CIVIL + </button>
+    </a>
+    <a href="../opc_Administrador/agregar_y_editar/agregar-comunidades_adm.html"> <button> AGREGAR COMUNIDAD + </button> </a>
+    <a href="../opc_Administrador/agregar_y_editar/agregar_domicilio_adm.html"> <button> AGREGAR DOMICILIO + </button> </a>
+</div>
     <section class="seccion-municipio">
         <h2>MUNICIPIO CON SERVICIO DE AGUA</h2>
         <a href="../opc_Administrador/barrios_chiconamel_adm.html?comunidad=CHICONAMEL" class="card-grande">CHICONAMEL</a>
@@ -31,13 +41,15 @@
 
     <section class="seccion-comunidades">
         <h2>COMUNIDADES CON SERVICIO DE AGUA POTABLE</h2>
-        <div class="grid-comunidades">
-            <a href="../opc_Administrador/civilesDeComunidades.html" class="card">TALTAMAYA </a>
-            <a href="../opc_Administrador/civilesDeComunidades.html?comunidad=LaPEÑA"class="card">LA PEÑA </a>
-            <a href="../opc_Administrador/civilesDeComunidades.html?comunidad=VENADOS"class="card">VENADOS </a>
-            <a href="../opc_Administrador/civilesDeComunidades.html?comunidad=LASPILAS"class="card">LAS PILAS </a>
+        
+       <div class="grid-comunidades" id="grid-comunidades">
+            
         </div>
     </section>
 </main>
+
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    
+<script src="../opc_Administrador/javasrip-editar_y_agregar_opc_admin/comunidades.js"></script>
 </body>
 </html>

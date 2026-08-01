@@ -12,6 +12,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // Programar el botón para que redirija al modo manual con la misma cuenta
+    const btnIrManual = document.getElementById('btnIrManual');
+    if (btnIrManual) {
+        btnIrManual.addEventListener('click', () => {
+            window.location.href = `/html/recibo_configurar_manual.html?cuenta=${cuentaCiudadano}`;
+        });
+    }
+
     // 2. Cargamos la fecha actual en los campos correspondientes del recibo impreso
     const fecha = new Date();
     document.getElementById('fecha-dia').textContent = String(fecha.getDate()).padStart(2, '0');
@@ -28,7 +36,7 @@ async function cargarDatosDelRecibo(cuenta) {
         
         if (!response.ok) throw new Error('No se encontró información para este ciudadano.');
 
-        // 🎯 FIX SENIOR: El controlador devuelve un objeto plano {}, ya no un array []
+        // El controlador devuelve un objeto plano {}
         const info = await response.json();
         
         if (!info || !info.nombre) {
@@ -38,7 +46,7 @@ async function cargarDatosDelRecibo(cuenta) {
 
         datosCivilGlobal = info; // Almacenamos para el guardado posterior
 
-        // Rellenar cabecera e información en blanco del ciudadano
+        // Rellenar cabecera e información del ciudadano
         document.getElementById('recibo-folio').textContent = "No. PENDIENTE";
         document.getElementById('cliente-nombre').textContent = `${info.nombre} ${info.apellido_paterno} ${info.apellido_materno || ''}`.toUpperCase();
         document.getElementById('cliente-domicilio').textContent = `${info.domicilio || 'CONOCIDO'}, ${info.nombre_comunidad}`.toUpperCase();
@@ -49,9 +57,12 @@ async function cargarDatosDelRecibo(cuenta) {
         document.getElementById('imp-domestico').textContent = "$ 0.00";
         document.getElementById('imp-comercial').textContent = "$ 0.00";
 
-        // Asignar el monto de la tarifa de forma dinámica según su tipo de servicio
+        // 🎯 AJUSTE DOMESTICO 2:
+        // Evaluamos si es Doméstico (1), Doméstico 2 (3), o si la propiedad de texto incluye "domestico"
         const montoBase = parseFloat(info.monto || 0);
-        if (info.tipo_servicio === 1 || info.nombre_servicio?.toLowerCase() === 'domestico') {
+        const servicioNombre = (info.nombre_servicio || info.tipo_servicio_nombre || '').toLowerCase();
+
+        if (info.tipo_servicio === 1 || info.tipo_servicio === 3 || servicioNombre.includes('domestico')) {
             document.getElementById('imp-domestico').textContent = `$ ${montoBase.toFixed(2)}`;
         } else {
             document.getElementById('imp-comercial').textContent = `$ ${montoBase.toFixed(2)}`;
@@ -62,7 +73,7 @@ async function cargarDatosDelRecibo(cuenta) {
         const tomasAgua = 1.00; // Valor entero representativo en el recibo       
         const rezagos = 0.00;         
         const recargos = 0.00;  
-        const iva = montoBase * 0.00; // 16% de IVA automático de la tarifa base
+        const iva = 0.00; // Ajusta según la lógica de tu municipio si aplica IVA o no
         const descuentos = 0.00;
 
         document.getElementById('imp-contrato').textContent = `$ ${contrato.toFixed(2)}`;
@@ -76,12 +87,12 @@ async function cargarDatosDelRecibo(cuenta) {
         const totalFinal = (montoBase + contrato + rezagos + recargos + iva) - descuentos;
         document.getElementById('imp-total').innerHTML = `<strong>$ ${totalFinal.toFixed(2)}</strong>`;
 
-        // 🎯 FIX SENIOR: Guardamos los montos calculados en el estado global para no depender del DOM al guardar
+        // Guardamos los montos calculados en el estado global para el guardado
         datosCivilGlobal.valoresCalculados = {
             contrato, tomasAgua, rezagos, recargos, iva, descuentos, totalFinal
         };
 
-        // Colocar el importe con letra legible en texto castellano oficial
+        // Colocar el importe con letra
         document.getElementById('total-letras').textContent = numeroALetras(totalFinal);
 
     } catch (error) {
@@ -100,13 +111,10 @@ async function generarYGuardarRecibo() {
     const sePago = confirm('¿El ciudadano liquidará este recibo en ventanilla en este momento? \n\n[Aceptar = Registrar como PAGADO] \n[Cancelar = Registrar como PENDIENTE]');
     const fechaPagoFinal = sePago ? new Date().toISOString().slice(0, 19).replace('T', ' ') : null;
 
-    // 🌟 CAPTURAMOS LA BANDERA QUE EL CONTROLADOR REVISARÁ PARA SABER SI HACE UN ADEUDO AUTOMÁTICO
     const estadoElegido = sePago ? 'Pagado' : 'Pendiente';
-
     const idUsuarioLogueado = localStorage.getItem('id_usuario') || 1; 
     const v = datosCivilGlobal.valoresCalculados;
 
-    // 🎯 CUERPO DE PETICIÓN PROTEGIDO CONTRA ERRORES DE REPLAZO DE DOM
     const cuerpoPeticion = {
         fecha_pago: fechaPagoFinal,
         mes_pagado: document.getElementById('recibo-mes-pago').textContent,
@@ -122,7 +130,7 @@ async function generarYGuardarRecibo() {
         importe_letra: document.getElementById('total-letras').textContent,
         id_ciudadano: datosCivilGlobal.id_ciudadano,
         id_usuario: parseInt(idUsuarioLogueado),
-        estado_recibo: estadoElegido // 👈 AQUÍ ENVIAMOS LA DECISIÓN DE VENTANILLA AL BACKEND
+        estado_recibo: estadoElegido
     };
 
     try {
@@ -141,17 +149,12 @@ async function generarYGuardarRecibo() {
         const data = await response.json();
 
         if (response.ok) {
-            // Actualizamos visualmente el folio devuelto por el backend
             document.getElementById('recibo-folio').textContent = `No. ${String(data.numero_recibo).padStart(4, '0')}`;
-            
-            // Usamos el mensaje dinámico del backend que avisa si se envió a rezagados o se cobró
             alert(data.message || `¡Recibo oficial No. ${data.numero_recibo} guardado con éxito!`);
             
-            // Opción Senior: Ocultar los botones de acción para permitir la impresión limpia con Ctrl+P
-            document.querySelector('.acciones-recibo').style.display = 'none';
-           // window.print(); // Abre el cuadro de diálogo de impresión nativo automáticamente
-            
-            // Redirección posterior al flujo de trabajo
+            const acciones = document.querySelector('.acciones-recibo');
+            if (acciones) acciones.style.display = 'none';
+
             window.location.href = '../../html/barrios_chiconamel.html';
         } else {
             alert(`Error del servidor: ${data.message}`);
@@ -171,7 +174,7 @@ async function generarYGuardarRecibo() {
     }
 }
 
-// 🎯 ALGORITMO SENIOR: Conversión real de números a letras en castellano fiscal
+// Algoritmo para conversión de números a letras
 function numeroALetras(num) {
     const Unidades = num => ['','UN','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE'][num];
     const Decenas = num => ['','DIEZ','VEINTE','TREINTA','CUARENTA','CINCUENTA','SESENTA','SETENTA','OCHENTA','NOVENTA'][num];
@@ -195,21 +198,8 @@ function numeroALetras(num) {
         if (c === 1 && d_u === 0) textoCentena = 'CIEN';
         letras = `${textoCentena} ${numeroALetras(d_u).split(' PESOS')[0]}`;
     } else {
-        letras = `${enteros}`; // Fallback para números extraordinariamente grandes
+        letras = `${enteros}`;
     }
 
     return `${letras.trim()} PESOS ${String(centavos).padStart(2, '0')}/100 M.N.`.toUpperCase();
 }
-document.addEventListener('DOMContentLoaded', () => {
-    // ... (Tu código actual para extraer la cuenta y cargar los datos) ...
-    const urlParams = new URLSearchParams(window.location.search);
-    const cuentaCiudadano = urlParams.get('cuenta');
-
-    // Programar el botón para que redirija al modo manual con la misma cuenta
-    const btnIrManual = document.getElementById('btnIrManual');
-    if (btnIrManual && cuentaCiudadano) {
-        btnIrManual.addEventListener('click', () => {
-            window.location.href = `/html/recibo_configurar_manual.html?cuenta=${cuentaCiudadano}`;
-        });
-    }
-});

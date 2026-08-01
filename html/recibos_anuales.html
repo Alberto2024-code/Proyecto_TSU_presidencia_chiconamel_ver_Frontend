@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/bootstrap.min.css">     
+   
+<link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/login.css">
     <link rel="stylesheet" href="../css/resivo.css">
     <title>Sistema web de cobro de agua potable</title>
-    
+    <script src="recibo.js" defer></script>
 </head>
  
 <body>
@@ -15,20 +16,18 @@
 <header> 
     <h1>TU SISTEMA DE AGUA CONFIABLE</h1>
     <nav>
-         <a href="../opc_Administrador/Comunidades_adm.html"> Comunidades</a>
-        <a href="../opc_Administrador/tipo_corte_adm.html">pagos</a>
-        <a href="../opc_Administrador/tipo_servicio_adm.html">Tipo servicio</a>
-        <a href="../opc_Administrador/tipos_descuento_adm.html">Tipo descuentos</a>
-        <a href="../opc_Administrador/resagados_adm.html">Resagados</a>
-        <a href="../opc_Administrador/menu-admin.html">inicio</a>
-        <a href="../opc_Administrador/usuarios.html">Usuarios</a>
+        <a href="Comunidades.html"> Comunidades</a>
+        <a href="tipo_corte.html">pagos</a>
+        <a href="tipo_servicio.html">Tipo servicio</a>
+        <a href="tipos_descuento.html">Tipo descuentos</a>
+        <a href="resagados.html">Resagados</a>
+        <a href="menu.html">inicio</a>
     </nav> 
 </header>
-
 <div class="recibo-papel">
     <div class="header-recibo">
         <div class="logo-area">
-            <img src="/imagenes/logotipo_presidencia-.jpeg" alt="20px" width="220px" height="140px">
+            <img src="/imagenes/logotipo_presidencia-.jpeg" alt="Logotipo Presidencia Municipal" width="220" height="140">
             <div class="texto-header">
                 <h2>MUNICIPIO DE CHICONAMEL</h2>
                 <h3>TESORERÍA MUNICIPAL</h3>
@@ -50,18 +49,21 @@
 
     <div class="datos-cliente">
         <div class="linea">
-            <span>Chiconamel, Ver. a</span> <span class="dato" id="fecha-dia">--</span> <span>de</span> <span class="dato" id="fecha-mes">--</span> <span>del 20</span> <span class="dato" id="fecha-anio">--</span>
+            <span>Chiconamel, Ver. a</span> <span class="dato" id="fecha-dia">--</span> 
+            <span>de</span> <span class="dato" id="fecha-mes">--</span> 
+            <span>del</span> <span class="dato" id="fecha-anio">--</span>
         </div>
-       
+        
         <div class="linea">
-            <span>EL C:</span> <span class="dato-largo" id="cliente-nombre" >Cargando...</span>
+            <span>EL C:</span> <span class="dato-largo" id="cliente-nombre">Cargando...</span>
         </div>
-       
+        
         <div class="linea">
             <span>DOMICILIO:</span> <span class="dato-largo" id="cliente-domicilio">Cargando...</span>
         </div>
         <div class="linea">
-            <span>Comprobante del mes de:</span> <span class="dato" id="recibo-mes-pago">--</span> <span>Cta. No.</span> <span class="dato" id="cliente-cuenta">--</span>
+            <span>Comprobante del mes de:</span> <span class="dato" id="recibo-mes-pago">--</span> 
+            <span>Cta. No.</span> <span class="dato" id="cliente-cuenta">--</span>
         </div>
     </div>
 
@@ -95,9 +97,8 @@
 
     <div class="footer-recibo">
         <div class="sat-box">
-            <div class="fake-qr"></div>
             <small>EFECTOS FISCALES AL PAGO</small>
-            <img src="../imagenes/codigoQR_de_la_wed_chiconamel.png" alt="50px" width="90px">
+            <img src="../imagenes/codigoQR_de_la_wed_chiconamel.png" alt="Código QR de Verificación" width="90">
         </div>
         <div class="firma-box">
             <div class="espacio-firma"></div>
@@ -105,22 +106,11 @@
         </div>
     </div>
 
-    <p class="nota-legal">LA REPRODUCCION NO AUTORIZADA DE ESTE COMPROBANTE CAUSA UN DELITO EN LOS TÉRMINOS DE LAS DISPOSICIONES FISCALES.</p>
-    <div class="acciones-recibo no-print" style="text-align:center; margin-top:30px;">
-        <button onclick="generarYGuardarRecibo()" id="btnGenerar">
-             LIQUIDAR ADEUDO Y GUARDAR
-        </button>
-        <button class="no-print" onclick="window.print()">Imprimir Recibo</button>
-        <button onclick="window.history.back()">
-             Cancelar
-        </button>
-    </div>
+    <p class="nota-legal">LA REPRODUCCIÓN NO AUTORIZADA DE ESTE COMPROBANTE CAUSA UN DELITO EN LOS TÉRMINOS DE LAS DISPOSICIONES FISCALES.</p>
 </div>
 
-
-    
-    <script src="../js/bootstrap.bundle.min.js"></script>
-    
-<script src="../JavaScrip/recibo_adeudos.js"></script>
+<button class="no-print" onclick="window.print()">Imprimir Recibo</button>
+<script src="../JavaScrip/bootstrap.bundle.min.js"></script>
+<script src="../JavaScrip/recibo_anuales.js"></script>
 </body>
-</html> 
+</html>

@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function cargarServiciosDomesticos() {
     try {
-        const respuesta = await fetch('http://localhost:3000/api/civiles/domesticos', {
+        const respuesta = await fetch('http://localhost:3000/api/civiles/comerciales', {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });

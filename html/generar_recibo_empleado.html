@@ -1,34 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 1. Bootstrap CSS local -->
+    <link rel="stylesheet" href="../css/bootstrap.min.css"> 
+    
+    <!-- 2. Tus CSS personalizados -->
     <link rel="stylesheet" href="/css/Personal.css"> 
     <link rel="stylesheet" href="/css/login.css">
-    
     <link rel="stylesheet" href="/css/resivo.css">
+    
     <title>Sistema web de cobro de agua potable</title>
     
+   
 </head>
- 
+
 <body>
 
-<header> 
-    <h1>TU SISTEMA DE AGUA CONFIABLE</h1>
-    <nav>
-         <a href="Comunidades.html"> Comunidades</a>
+<!-- HEADER SIN ESPACIO ARRIBA Y BOTONES UNIFORMES -->
+ <header> <h1>TU SISTEMA DE AGUA CONFIABLE</h1>
+    
+        <nav>
+     
+       <a href="Comunidades.html"> Comunidades</a>
         <a href="tipo_corte.html">pagos</a>
         <a href="tipo_servicio.html">Tipo servicio</a>
         <a href="tipos_descuento.html">Tipo descuentos</a>
         <a href="resagados.html">Resagados</a>
         <a href="menu.html">inicio</a>
+
+    
     </nav> 
 </header>
-
-    <div class="recibo-papel">
+<!-- CONTENEDOR DEL RECIBO (Mantiene tu diseño actual centrado) -->
+<div class="recibo-papel">
     <div class="header-recibo">
         <div class="logo-area">
-            <img src="/imagenes/logotipo_presidencia-.jpeg" alt="20px" width="220px" height="140px">
+            <img src="/imagenes/logotipo_presidencia-.jpeg" alt="Logotipo" width="220px" height="140px">
             <div class="texto-header">
                 <h2>MUNICIPIO DE CHICONAMEL</h2>
                 <h3>TESORERÍA MUNICIPAL</h3>
@@ -100,11 +110,12 @@
         <span>IMPORTE CON LETRA:</span>
         <span class="dato-largo" id="total-letras">Cargando...</span>
     </div>
+
     <div class="footer-recibo">
         <div class="sat-box">
             <div class="fake-qr"></div>
             <small>EFECTOS FISCALES AL PAGO</small>
-            <img src="../../imagenes/codigoQR_de_la_wed_chiconamel.png" alt="50px" width="90px">
+            <img src="../../imagenes/codigoQR_de_la_wed_chiconamel.png" alt="Código QR" width="90px">
         </div>
         <div class="firma-box">
             <div class="espacio-firma"></div>
@@ -114,25 +125,25 @@
 
     <p class="nota-legal">LA REPRODUCCION NO AUTORIZADA DE ESTE COMPROBANTE CAUSA UN DELITO EN LOS TÉRMINOS DE LAS DISPOSICIONES FISCALES.</p>
 
-
+    <!-- Botones de Acción -->
     <div class="acciones-recibo no-print" style="text-align:center; margin-top:30px;">
-
-        
-
         <button onclick="generarYGuardarRecibo()" id="btnGenerar">
-             GENERAR RECIBO Y GUARDAR
+            GENERAR RECIBO Y GUARDAR
         </button>
-        <button  class="no-print" onclick="window.print()">Imprimir Recibo</button>
+        <button class="no-print" onclick="window.print()">Imprimir Recibo</button>
         <button id="btnIrManual" style="background-color: #ff9800; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 10px;">
-        CONFIGURAR RECIBO (MANUAL)
+            CONFIGURAR RECIBO (MANUAL)
         </button>
         <button onclick="window.history.back()">
-             Cancelar
+            Cancelar
         </button>
     </div>
 
 </div>
 
+<!-- 3. Scripts JS (Cargados localmente) -->
+<script src="../js/bootstrap.bundle.min.js"></script>
 <script src="../../opc_Administrador/javasrip-editar_y_agregar_opc_admin/generar_recibo_empleado.js"></script>
+
 </body>
 </html>

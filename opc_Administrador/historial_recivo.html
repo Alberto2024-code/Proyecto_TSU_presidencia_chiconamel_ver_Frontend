@@ -9,6 +9,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="stylesheet" href="../css/bootstrap.min.css">     
     <link rel="stylesheet" href="../css/login.css">
     <link rel="stylesheet" href="../css/historial_recivo.css">
     <title>Sistema wed de cobro de agua potable</title>
@@ -33,12 +34,16 @@
 </header>
 
     <main class="contenedor-historial">
-        <h2 class="titulo-seccion">RECIBOS GENERADOS</h2>
+        <h2 class="titulo-seccion">RECIBOS GENERADOS POR AÑO</h2>
+        <div class="grid-recibos" id="contenedor-recibos-por-año"></div>
+       
+        <h2 class="titulo-seccion">RECIBOS GENERADOS POR MES</h2>
         
         <div class="grid-recibos" id="contenedor-recibos"></div>
     </main>
     
-
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    
     <script src="../opc_Administrador/javasrip-editar_y_agregar_opc_admin/historial_recibo_adm.js"></script>
 </body>
 </html>

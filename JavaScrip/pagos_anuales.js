@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function cargarPagosAnualesDinamico() {
     const tabla = document.getElementById("tabla-rezagados");
-    const URL_API = "http://localhost:3000/api/recibo/"; 
+    const URL_API = "http://localhost:3000/api/recibo/pagos_anuales_civiles"; 
 
     try {
         const respuesta = await fetch(URL_API);
@@ -17,54 +17,31 @@ async function cargarPagosAnualesDinamico() {
 
         const recibos = await respuesta.json();
 
+        tabla.innerHTML = "";
+
+        // Si la API no devuelve ningún usuario puntual
         if (!Array.isArray(recibos) || recibos.length === 0) {
-            tabla.innerHTML = `<tr><td colspan="12" style="text-align: center; padding: 20px;">No hay recibos registrados.</td></tr>`;
+            tabla.innerHTML = `<tr><td colspan="11" style="text-align: center; padding: 20px; font-style: italic;">No se han registrado usuarios con Pago Anual Completo.</td></tr>`;
             return;
         }
 
-        // 🔄 AGRUPAR RECIBOS POR NÚMERO DE CUENTA
-        const cuentasAgrupadas = {};
-
-        recibos.forEach(recibo => {
-            const cuenta = recibo.cuenta_no || recibo.id_ciudadano;
-            
-            if (!cuentasAgrupadas[cuenta]) {
-                cuentasAgrupadas[cuenta] = {
-                    id_recibo: recibo.id_recibo,
-                    nombre: recibo.nombre,
-                    apellido_paterno: recibo.apellido_paterno,
-                    apellido_materno: recibo.apellido_materno,
-                    cuenta_no: cuenta,
-                    nombre_comunidad: recibo.nombre_comunidad,
-                    domicilio: recibo.domicilio,
-                    tipo_servicio: recibo.tipo_servicio,
-                    totalAcumulado: 0,
-                    descuentoAcumulado: 0,
-                    meses: []
-                };
-            }
-
-            cuentasAgrupadas[cuenta].totalAcumulado += parseFloat(recibo.total || 0);
-            cuentasAgrupadas[cuenta].descuentoAcumulado += parseFloat(recibo.descuentos || 0);
-            if (recibo.mes_pagado) {
-                cuentasAgrupadas[cuenta].meses.push(recibo.mes_pagado.trim());
-            }
-        });
-
-        tabla.innerHTML = "";
-
-        // RENDERIZAR UNA SOLA FILA POR CIUDADANO
-        Object.values(cuentasAgrupadas).forEach(c => {
+        // 🚀 RENDERIZAR DATOS
+        recibos.forEach((c, index) => {
             const fila = document.createElement("tr");
-            const tipoServicioTexto = c.tipo_servicio === 2 ? "COMERCIAL" : "DOMÉSTICO";
-            
-            // Si tiene 12 o más registros/meses o abarca Enero-Diciembre, mostramos PAGO ANUAL
-            const textoMeses = c.meses.length >= 12 
-                ? "ENERO - DICIEMBRE (PAGO ANUAL)" 
-                : c.meses.join(", ");
 
+            // Validar tipo de servicio (Comercial / Doméstico)
+            const tipoServicioTexto = (c.tipo_servicio === 2 || String(c.tipo_servicio).toLowerCase() === 'comercial') ? "COMERCIAL" : "DOMÉSTICO";
+
+            // Formatear montos a 2 decimales
+            const total = parseFloat(c.totalAcumulado || 0).toFixed(2);
+            const descuento = parseFloat(c.descuentoAcumulado || 0).toFixed(2);
+
+            // Año del pago (usa anio_inicio de la BD)
+            const anioPago = c.anio_inicio || new Date().getFullYear();
+            const primerMes = c.primer_mes;
+            const segundoMes = c.ultimo_mes;
             fila.innerHTML = `
-                <td>${c.id_recibo || '--'}</td>
+                <td>${c.id_ciudadano || (index + 1)}</td>
                 <td>${(c.nombre || '').toUpperCase()}</td>
                 <td>${(c.apellido_paterno || '').toUpperCase()}</td>
                 <td>${(c.apellido_materno || '').toUpperCase()}</td>
@@ -72,22 +49,25 @@ async function cargarPagosAnualesDinamico() {
                 <td>${(c.nombre_comunidad || 'CHICONAMEL').toUpperCase()}</td>
                 <td>${(c.domicilio || 'CONOCIDO').toUpperCase()}</td>
                 <td>${tipoServicioTexto}</td>
-                <td>$${c.totalAcumulado.toFixed(2)}</td>
-                <td>$${c.descuentoAcumulado.toFixed(2)}</td>
-                <td><span style="background-color: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px; font-weight: bold;">${textoMeses}</span></td>
-                
-                
+                <td>$${total}</td>
+                <td>$${descuento}</td>
+                <td>
+                    <span style="background-color: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px; font-weight: bold; display: inline-block;">
+                        ${primerMes} ${segundoMes} ${anioPago} (PAGO ANUAL)
+                    </span>
+                </td>
             `;
 
             tabla.appendChild(fila);
         });
 
     } catch (error) {
-        console.error("Error al agrupar pagos:", error);
+        console.error("Error al cargar pagos anuales:", error);
+        tabla.innerHTML = `<tr><td colspan="11" style="text-align: center; color: red; padding: 20px;">Error al obtener los datos del servidor.</td></tr>`;
     }
 }
 
-// Buscador dinámico por nombre o cuenta
+// Buscador dinámico por Nombre, Apellidos o Número de Cuenta
 function filtrarTablaPorNombre() {
     const query = document.getElementById("buscar-rezagado").value.toLowerCase().trim();
     const filas = document.querySelectorAll("#tabla-rezagados tr");

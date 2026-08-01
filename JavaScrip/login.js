@@ -23,7 +23,7 @@ if (btnTogglePassword && inputPassword) {
 document.getElementById('login').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // 🚀 CORRECCIÓN DE IDs: Mapeamos con las IDs reales de tu Login HTML
+    // Mapeamos con las IDs reales de tu Login HTML
     const inputUser = document.getElementById('usuario') || document.getElementById('input-username');
     const inputPass = document.getElementById('input-password');
     const selectRol = document.getElementById('rol') || document.getElementById('select-rol');
@@ -59,16 +59,19 @@ document.getElementById('login').addEventListener('submit', async (e) => {
         const datos = await response.json();
 
         if (response.ok) {
-            // 1. Guardamos los nuevos datos limpitos
+            // 🌟 CORRECCIÓN CRÍTICA: Extraemos el ID dinámico desde el objeto usuario
+            const idReal = datos.usuario?.id_usuario || datos.usuario?.id || datos.id_usuario;
+
+            // 1. Guardamos los datos correctamente en el localStorage
             localStorage.setItem('token', datos.token);
-            localStorage.setItem('id_usuario',datos.id_usuario); 
+            localStorage.setItem('id_usuario', idReal); // 👈 ¡Guarda el ID del usuario activo!
             localStorage.setItem('usuario', JSON.stringify(datos.usuario)); 
             localStorage.setItem('usuarioNombre', datos.usuario.nombre);
             localStorage.setItem('usuarioRol', datos.usuario.rol);
 
             alert(`¡Bienvenido al sistema, ${datos.usuario.nombre}!`);
             
-            // 2. Redirección basada EN LOS DATOS REALES que acaban de llegar exitosamente
+            // 2. Redirección basada en los datos reales del usuario
             const rolUsuario = datos.usuario.rol;
 
             if (rolUsuario == 1 || rolUsuario === "Administrador") {
