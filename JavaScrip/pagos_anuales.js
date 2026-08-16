@@ -9,11 +9,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function cargarPagosAnualesDinamico() {
     const tabla = document.getElementById("tabla-rezagados");
-    const URL_API = "http://localhost:3000/api/recibo/pagos_anuales_civiles"; 
+    if (!tabla) return;
+
+    const endpoint = '/api/recibo/pagos_anuales_civiles';
+    let respuesta;
 
     try {
-        const respuesta = await fetch(URL_API);
-        if (!respuesta.ok) throw new Error("Error en la petición a la API");
+        // 💡 1. Primer intento: Usando la IP dinámica del servidor
+        respuesta = await fetch(`http://${window.location.hostname}:3000${endpoint}`);
+    } catch (netError) {
+        console.warn("⚠️ Falló la conexión por IP/Red. Intentando conexión local directa (localhost)...");
+        try {
+            // 🔄 2. Segundo intento (Respaldo sin red / TP-Link apagado): conecta a localhost
+            respuesta = await fetch(`http://localhost:3000${endpoint}`);
+        } catch (localError) {
+            console.error("❌ Error crítico al conectar con el servidor de pagos anuales:", localError);
+            tabla.innerHTML = `<tr><td colspan="11" style="text-align: center; color: red; padding: 20px; font-weight: bold;">Error de conexión. Asegúrate de que el backend de Node.js esté activo.</td></tr>`;
+            return;
+        }
+    }
+
+    try {
+        if (!respuesta || !respuesta.ok) {
+            throw new Error("Error en la petición a la API");
+        }
 
         const recibos = await respuesta.json();
 
@@ -38,8 +57,9 @@ async function cargarPagosAnualesDinamico() {
 
             // Año del pago (usa anio_inicio de la BD)
             const anioPago = c.anio_inicio || new Date().getFullYear();
-            const primerMes = c.primer_mes;
-            const segundoMes = c.ultimo_mes;
+            const primerMes = c.primer_mes || '';
+            const segundoMes = c.ultimo_mes || '';
+
             fila.innerHTML = `
                 <td>${c.id_ciudadano || (index + 1)}</td>
                 <td>${(c.nombre || '').toUpperCase()}</td>
@@ -62,7 +82,7 @@ async function cargarPagosAnualesDinamico() {
         });
 
     } catch (error) {
-        console.error("Error al cargar pagos anuales:", error);
+        console.error("Error procesando pagos anuales:", error);
         tabla.innerHTML = `<tr><td colspan="11" style="text-align: center; color: red; padding: 20px;">Error al obtener los datos del servidor.</td></tr>`;
     }
 }

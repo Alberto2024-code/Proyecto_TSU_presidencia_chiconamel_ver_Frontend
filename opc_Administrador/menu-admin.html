@@ -33,19 +33,27 @@
 </header>
 
 <div class="user-control">
-        <div class="user-details">
-            <span class="user-name" id="nombre-usuario"></span>
-            <span class="user-role" id="rol"></span>
-        </div>
-        <a href="../html/login.html" class="logout-btn">
-            <span class="logout-icon"></span> 
+        
+     <button id="btn-respaldo" class="btn btn-success">
+        🖨️ Descargar Respaldo (.sql)
+    </button>
+       <input type="file" id="input-sql" accept=".sql" style="display: none;">
+
+   
+    <button id="btn-restaurar" class="btn-restaurar">
+         📩Restaurar Respaldo (.sql)
+    </button>
+    <a href="../html/login.html" class="logout-btn">
+            <span class="logout-icon">⏻</span> 
             Cerrar Sesión
         </a>
-    </div>
-<img src="../imagenes/logo.png" alt="100px" width="400px"> 
-<h1>BIENVENIDO AL SISTEMA DE AGUA CONFIABLE</h1>
-
-<script src="../js/bootstrap.bundle.min.js"></script>    
- <script src="../../JavaScrip/menu-leer-nombre-usuario.js"></script>
+       
+</div>
+<img src="../imagenes/logo.png" alt="200px" width="330px"> 
+<h1>BIENVENIDO QUE DESEA REALIZAR EL DIA DE HOY </h1>
+  
+    <script src="../JavaScrip/bootstrap.bundle.min.js"></script>
+    <script src="../JavaScrip/respaldo.js"></script>
+    <script src="../JavaScrip/restaurar_bd.js"></script>
 </body>
 </html>

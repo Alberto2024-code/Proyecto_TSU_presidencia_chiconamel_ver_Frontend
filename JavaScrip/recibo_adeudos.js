@@ -13,8 +13,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        // 2. Consultamos todos los adeudos pendientes del servidor
-        const respuesta = await fetch("http://localhost:3000/api/adeudos/");
+        // =========================================================================
+        // 2. CONSULTAR ADEUDOS PENDIENTES (CON RESPALDO EN LOCALHOST)
+        // =========================================================================
+        const endpointAdeudos = '/api/adeudos/';
+        let respuesta;
+
+        try {
+            // 💡 1. Primer intento: IP dinámica actual
+            respuesta = await fetch(`http://${window.location.hostname}:3000${endpointAdeudos}`);
+        } catch (netError) {
+            console.warn("⚠️ Falló la conexión por IP/Red. Intentando conexión local directa (localhost)...");
+            try {
+                // 🔄 2. Segundo intento (Respaldo sin red / TP-Link apagado): conecta a localhost
+                respuesta = await fetch(`http://localhost:3000${endpointAdeudos}`);
+            } catch (localError) {
+                console.error("❌ Error crítico al consultar adeudos:", localError);
+                alert("Error crítico de conexión. Verifica que el backend de Node.js esté activo.");
+                return;
+            }
+        }
+
+        if (!respuesta || !respuesta.ok) {
+            throw new Error("No se pudo obtener la respuesta correcta del servidor de adeudos.");
+        }
+
         const adeudos = await respuesta.json();
 
         // 3. Localizar los registros (Soporta cobro individual o por cuenta completa)
@@ -53,32 +76,59 @@ document.addEventListener("DOMContentLoaded", async () => {
         
         document.getElementById("cliente-cuenta").textContent = base.cuenta_no || '--';
         
-        // 💡 AGRUPAR MESES: Construir la lista de meses adeudados
+        // 💡 AGRUPAR MESES Y TOTAL ACUMULADO
         const listaMeses = adeudosDelCliente.map(item => (item.mes_adeudo || 'JULIO').toUpperCase());
         const anioTexto = base.anio_adeudo || String(fechaActual.getFullYear());
+        const cantidadMeses = listaMeses.length || 1;
         
-        // Muestra en vista previa: "SEPTIEMBRE, OCTUBRE, NOVIEMBRE, DICIEMBRE, AGOSTO DE 2026"
         document.getElementById("recibo-mes-pago").textContent = `${listaMeses.join(", ")} DE ${anioTexto}`;
         document.getElementById("recibo-folio").textContent = `No. RZ-${base.id_adeudo}`;
 
-        // 💡 CALCULAR TOTAL ACUMULADO
+        // Total acumulado que se debe pagar
         const totalRezago = adeudosDelCliente.reduce((sum, item) => sum + parseFloat(item.monto_debe || 0), 0);
-       
-        document.getElementById("imp-domestico").textContent = base.tipo_servicio?.toLowerCase() !== 'comercial' ? `$ ${totalRezago.toFixed(2)}` : "$ 0.00";
-        document.getElementById("imp-comercial").textContent = base.tipo_servicio?.toLowerCase() === 'comercial' ? `$ ${totalRezago.toFixed(2)}` : "$ 0.00";
+
+        // =================================================================
+        // 🎯 LÓGICA DE CÁLCULO DIRECTA CON EL IVA DE LA API
+        // =================================================================
+        
+        // 1. Leemos el IVA que viene del JSON de la API (Si viene null o vacio, asigna 6.00 por defecto)
+        const ivaUnitarioBackend = parseFloat(base.iva) || 6.00;
+
+        // 2. Multiplicamos el IVA por la cantidad de meses acumulados
+        const totalAdicionalIVA = ivaUnitarioBackend * cantidadMeses;
+
+        // 3. LA RESTA: La Cuota Base real es el Total menos el Adicional/IVA
+        const cuotaBasePura = totalRezago - totalAdicionalIVA;
+
+        // 4. Pintamos en la plantilla del recibo
+        const tipoServicioStr = String(base.tipo_servicio || '').toLowerCase();
+        
+        if (tipoServicioStr.includes('comercial')) {
+            document.getElementById("imp-domestico").textContent = "$ 0.00";
+            document.getElementById("imp-comercial").textContent = `$ ${cuotaBasePura.toFixed(2)}`;
+        } else {
+            document.getElementById("imp-domestico").textContent = `$ ${cuotaBasePura.toFixed(2)}`;
+            document.getElementById("imp-comercial").textContent = "$ 0.00";
+        }
+
         document.getElementById("imp-contrato").textContent = "$ 0.00";
-        document.getElementById("imp-tomas").textContent = `${base.tomas_agua || '1'}`;
+        document.getElementById("imp-tomas").textContent = `${base.tomas_agua || '1.00'}`;
         document.getElementById("imp-recargos").textContent = "$ 0.00";
-        document.getElementById("imp-iva").textContent = "$ 6.00";
+        
+        // Muestra $7.00 (o $6.00) multiplicado por los meses que deba
+        document.getElementById("imp-iva").textContent = `$ ${totalAdicionalIVA.toFixed(2)}`; 
+        
         document.getElementById("imp-descuento").textContent = "$ 0.00";
         document.getElementById("imp-rezagos").textContent = "$ 0.00";
+        
+        // El total cuadra exacto
         document.getElementById("imp-total").textContent = `$ ${totalRezago.toFixed(2)}`;
 
         // Convertir importe numérico a texto legal
         document.getElementById("total-letras").textContent = numeroALetras(totalRezago);
 
         // =================================================================
-        // 6. ASIGNACIÓN EXCLUSIVA AL BOTÓN (LIQUIDAR MULTI-MES CORREGIDO)
+        // 6. ASIGNACIÓN EXCLUSIVA AL BOTÓN DE LIQUIDAR (CON RESPALDO EN LOCALHOST)
         // =================================================================
         const botonLiquidar = document.getElementById("btnGenerar");
         
@@ -97,32 +147,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     const idCiudadanoFinal = parseInt(base.id_ciudadano || base.id_usuario || 1);
                     const idsAdeudosArray = adeudosDelCliente.map(item => parseInt(item.id_adeudo));
-
-                    // Calculated unit value per month
-                    const cantidadMeses = listaMeses.length || 1;
                     const montoUnitarioPorMes = totalRezago / cantidadMeses;
 
-                    // Estructuramos el JSON limpio sin cadenas concatenadas de texto
                     const cuerpoPeticion = {
                         fecha_pago: new Date().toISOString().slice(0, 19).replace('T', ' '),
-                        
-                        // 🎯 SE ENVÍA EL ARRAY COMPLETO DE MESES PARA PROCESAR INDIVIDUALMENTE
                         meses: listaMeses,               
                         mes_pagado: listaMeses[0],       
-                        
                         anio: parseInt(anioTexto),
                         contrato: 0.00,
-                        tipo_servicio: base.tipo_servicio?.toLowerCase() === 'comercial' ? 2 : 1, 
+                        tipo_servicio: ivaUnitarioBackend === 7.00 ? 3 : (tipoServicioStr.includes('comercial') ? 2 : 1), 
                         tomas_agua: parseFloat(base.tomas_agua || 1),
                         rezagos: 0.00,
                         recargos: 0.00,
-                        iva: 0.00,
+                        iva: totalAdicionalIVA,
                         descuentos: 0.00,
-                        
-                        // 🎯 PRECIOS DIVIDIDOS CORRECTAMENTE
                         total_por_mes: montoUnitarioPorMes, 
-                        total: totalRezago,                
-                        
+                        total: totalRezago,                 
                         importe_letra: document.getElementById("total-letras").textContent,
                         id_ciudadano: idCiudadanoFinal, 
                         id_usuario: idUsuarioLogueado,
@@ -130,34 +170,55 @@ document.addEventListener("DOMContentLoaded", async () => {
                         ids_adeudos: idsAdeudosArray   
                     };
 
-                    console.log("Enviando liquidación corregida al Servidor:", cuerpoPeticion);
+                    console.log("Enviando liquidación al Servidor:", cuerpoPeticion);
 
-                    const respuestaPago = await fetch("http://localhost:3000/api/recibo/liquidar_rezago", {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(cuerpoPeticion)
-                    });
+                    const endpointLiquidar = '/api/recibo/liquidar_rezago';
+                    let respuestaPago;
+
+                    try {
+                        // 💡 1. Primer intento POST: IP dinámica
+                        respuestaPago = await fetch(`http://${window.location.hostname}:3000${endpointLiquidar}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(cuerpoPeticion)
+                        });
+                    } catch (netError) {
+                        console.warn("⚠️ Falló el pago por IP/Red. Intentando conexión local directa (localhost)...");
+                        try {
+                            // 🔄 2. Segundo intento POST: Localhost
+                            respuestaPago = await fetch(`http://localhost:3000${endpointLiquidar}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(cuerpoPeticion)
+                            });
+                        } catch (localError) {
+                            console.error("❌ Error crítico en el envío del pago:", localError);
+                            alert("Error crítico de red. No se pudo concretar la comunicación con el servidor.");
+                            botonLiquidar.disabled = false;
+                            botonLiquidar.textContent = "LIQUIDAR ADEUDO Y GUARDAR";
+                            return;
+                        }
+                    }
 
                     const resultado = await respuestaPago.json();
 
-                    if (respuestaPago.ok || resultado.success) {
+                    if (respuestaPago && (respuestaPago.ok || resultado.success)) {
                         alert(resultado.message || "¡Los adeudos seleccionados han sido liquidados y guardados exitosamente!");
                         
-                        // Redireccionamiento según el rol
                         if (rolUsuario === "admin") {
                             window.location.href = "resagados_adm.html";
                         } else {
                             window.location.href = "resagados.html";
                         }
                     } else {
-                        alert(`Error al procesar el pago: ${resultado.message}`);
+                        alert(`Error al procesar el pago: ${resultado.message || 'Error desconocido'}`);
                         botonLiquidar.disabled = false;
                         botonLiquidar.textContent = "LIQUIDAR ADEUDO Y GUARDAR";
                     }
 
                 } catch (error) {
                     console.error("Error en el proceso de liquidación:", error);
-                    alert("Error crítico de red. No se pudo concretar la comunicación con el servidor.");
+                    alert("Error interno al procesar el recibo.");
                     botonLiquidar.disabled = false;
                     botonLiquidar.textContent = "LIQUIDAR ADEUDO Y GUARDAR";
                 }

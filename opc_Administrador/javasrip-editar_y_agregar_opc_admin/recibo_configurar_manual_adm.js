@@ -50,29 +50,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // =========================================================================
-// CARGAR DATOS DEL RECIBO (CON RESPALDO EN LOCALHOST)
+// CARGA DE DATOS DEL RECIBO (CON RESPALDO EN LOCALHOST)
 // =========================================================================
 async function cargarDatosDelRecibo(cuenta) {
-    const endpointGet = `/api/recibo/${cuenta}`;
+    const endpointRecibo = `/api/recibo/${cuenta}`;
     let response;
 
     try {
-        // 💡 1. Primer intento: IP dinámica actual
-        response = await fetch(`http://${window.location.hostname}:3000${endpointGet}`);
+        // 💡 1. Primer intento: Host/IP dinámica
+        response = await fetch(`http://${window.location.hostname}:3000${endpointRecibo}`);
     } catch (netError) {
         console.warn("⚠️ Falló la conexión por IP/Red. Intentando conexión local directa (localhost)...");
         try {
-            // 🔄 2. Segundo intento (Respaldo sin red / TP-Link apagado): conecta a localhost
-            response = await fetch(`http://localhost:3000${endpointGet}`);
+            // 🔄 2. Segundo intento (Respaldo sin red / router apagado): localhost
+            response = await fetch(`http://localhost:3000${endpointRecibo}`);
         } catch (localError) {
-            console.error('❌ Error crítico al cargar la plantilla del recibo:', localError);
-            alert('Hubo un problema al recuperar los datos financieros del ciudadano. Verifica que el servidor de Node.js esté corriendo.');
+            console.error('❌ Error crítico en la petición del recibo:', localError);
+            alert('Error de conexión. Asegúrate de que el servidor backend esté en ejecución.');
             return;
         }
     }
 
     try {
-        if (!response || !response.ok) throw new Error('No se encontró información para este ciudadano.');
+        if (!response || !response.ok) {
+            throw new Error('No se encontró información para este ciudadano.');
+        }
 
         const info = await response.json();
         if (!info || (!info.nombre && !info.nombre_completo)) {
@@ -109,7 +111,7 @@ async function cargarDatosDelRecibo(cuenta) {
         calcularSumaTotalManual();
 
     } catch (error) {
-        console.error('Error al procesar la plantilla del recibo:', error);
+        console.error('Error al cargar la plantilla del recibo:', error);
         alert('Hubo un problema al recuperar los datos financieros del ciudadano.');
     }
 }
@@ -138,12 +140,12 @@ function obtenerValorCampo(id) {
     return isNaN(num) ? 0 : num;
 }
 
-// 🎯 CÁLCULO DE SUMA
+// 🎯 CÁLCULO DE SUMA CORREGIDO PARA ADM
 function calcularSumaTotalManual() {
     // 1. CONCEPTOS POR MES (se multiplican por los meses seleccionados)
     const domestico = obtenerValorCampo('imp-domestico');
     const comercial = obtenerValorCampo('imp-comercial');
-    // Soporta si la casilla en el HTML tiene id 'imp-iva' o 'imp-adicional'
+    // Detecta tanto id 'imp-adicional' como 'imp-iva'
     const adicional = obtenerValorCampo('imp-adicional') || obtenerValorCampo('imp-iva');
 
     // 2. CONCEPTOS ÚNICOS (solo 1 vez en todo el recibo)
@@ -226,7 +228,7 @@ async function generarYGuardarRecibo() {
     const recargos = obtenerValorCampo('imp-recargos');
     const descuentos = obtenerValorCampo('imp-descuento');
 
-    // Tarifa mensual pura (Agua + Adicional)
+    // Tarifa mensual limpia (Servicio + Adicional)
     const tarifaMensualBase = domestico + comercial + adicional;
 
     const mensajeAlerta = esAnual 
@@ -260,46 +262,37 @@ async function generarYGuardarRecibo() {
     };
 
     const btn = document.getElementById('btnGenerar');
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Procesando registro...';
+    }
+
+    const endpointGuardar = '/api/recibo/guardar-individual';
+    const opcionesPeticion = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cuerpoPeticion)
+    };
+
+    let response;
 
     try {
-        if (btn) {
-            btn.disabled = true;
-            btn.textContent = 'Procesando registro...';
+        try {
+            // 💡 1. Primer intento: IP/Host dinámico
+            response = await fetch(`http://${window.location.hostname}:3000${endpointGuardar}`, opcionesPeticion);
+        } catch (netError) {
+            console.warn("⚠️ Falló la conexión por IP/Red. Intentando conexión local directa (localhost)...");
+            // 🔄 2. Segundo intento: localhost
+            response = await fetch(`http://localhost:3000${endpointGuardar}`, opcionesPeticion);
         }
 
-        const endpointPost = '/api/recibo/guardar-individual';
-        let response;
-
-        try {
-            // 💡 1. Primer intento POST: IP dinámica
-            response = await fetch(`http://${window.location.hostname}:3000${endpointPost}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(cuerpoPeticion)
-            });
-        } catch (netError) {
-            console.warn("⚠️ Falló el registro por IP/Red. Intentando por localhost...");
-            try {
-                // 🔄 2. Segundo intento POST: Localhost
-                response = await fetch(`http://localhost:3000${endpointPost}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(cuerpoPeticion)
-                });
-            } catch (localError) {
-                console.error("❌ Error crítico en el registro:", localError);
-                alert('Ocurrió un fallo en la red de comunicación con tu servidor API.');
-                if (btn) {
-                    btn.disabled = false;
-                    btn.textContent = 'GENERAR RECIBO Y GUARDAR';
-                }
-                return;
-            }
+        if (!response) {
+            throw new Error('No se obtuvo respuesta del servidor backend.');
         }
 
         const data = await response.json();
 
-        if (response && response.ok) {
+        if (response.ok) {
             alert(data.message || '¡Registro procesado exitosamente!');
             
             const continuarOtroAnio = confirm(`¿Deseas cobrar otro período/año para esta misma cuenta?`);
@@ -311,19 +304,20 @@ async function generarYGuardarRecibo() {
                     btn.textContent = 'GENERAR RECIBO Y GUARDAR';
                 }
             } else {
-                window.location.href = '../html/barrios_chiconamel.html';
+                // Redirección del Administrador intacta
+                window.location.href = '../opc_Administrador/barrios_chiconamel_adm.html';
             }
 
         } else {
-            alert(`Atención del Sistema: ${data.message || data.error || 'Error desconocido'}`);
+            alert(`Atención del Sistema: ${data.message || data.error}`);
             if (btn) {
                 btn.disabled = false;
                 btn.textContent = 'GENERAR RECIBO Y GUARDAR';
             }
         }
     } catch (error) {
-        console.error('Error en el envío HTTP:', error);
-        alert('Ocurrió un fallo al procesar la respuesta del servidor.');
+        console.error('Error en la conexión HTTP:', error);
+        alert('Ocurrió un fallo en la red de comunicación con tu servidor API.');
         if (btn) {
             btn.disabled = false;
             btn.textContent = 'GENERAR RECIBO Y GUARDAR';

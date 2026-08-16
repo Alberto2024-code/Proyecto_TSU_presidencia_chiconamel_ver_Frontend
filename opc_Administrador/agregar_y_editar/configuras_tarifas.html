@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../css/bootstrap.min.css">     
-    <link rel="stylesheet" href="../../css/login.css">
-    <link rel="stylesheet" href="../../css/comunidades.css">
-    <link rel="stylesheet" href="../../css/Personal.css">
-    <link rel="stylesheet" href="../../css/configurar_tarifas.css">
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/comunidades.css">
+    <link rel="stylesheet" href="/css/Personal.css">
+    <link rel="stylesheet" href="/css/configurar_tarifas.css">
     <title>CONFIGURAR TARIFAS Y MULTAS</title>
 </head>
 <body>
@@ -15,13 +14,13 @@
     <header> 
         <h1>TU SISTEMA DE AGUA CONFIABLE</h1>
         <nav>
-             <a href="../../opc_Administrador/Comunidades_adm.html"> Comunidades</a>
-        <a href="../../opc_Administrador/tipo_corte_adm.html">pagos</a>
-        <a href="../../opc_Administrador/tipo_servicio_adm.html">Tipo servicio</a>
-        <a href="../../opc_Administrador/tipos_descuento_adm.html">Tipo descuentos</a>
-        <a href="../../opc_Administrador/resagados_adm.html">Resagados</a>
-        <a href="../../opc_Administrador/menu-admin.html">inicio</a>
-        <a href="../../opc_Administrador/usuarios.html">Usuarios</a>
+            <a href="../opc_Administrador/Comunidades_adm.html"> Comunidades</a>
+            <a href="../opc_Administrador/pagos_adm.html">pagos</a>
+            <a href="../opc_Administrador/tipo_servicio_adm.html">Tipo servicio</a>
+            <a href="../opc_Administrador/tipos_descuento_adm.html">Tipo descuentos</a>
+            <a href="../opc_Administrador/resagados_adm.html">Resagados</a>
+            <a href="../opc_Administrador/menu-admin.html">inicio</a>
+            <a href="../opc_Administrador/usuarios.html">Usuarios</a>
         </nav> 
     </header>
 
@@ -36,7 +35,6 @@
                     <select id="tipo_servicio" name="tipo_servicio" required>
                         <option value="Domestico">Doméstico</option>
                         <option value="Comercial">Comercial</option>
-                        <option value = "Domestico_2">Doméstico_2</option>
                     </select>
                 </div>
 
@@ -88,15 +86,14 @@
                 </div>
 
                 <div class="botones-accion">
-                    <a href="../../opc_Administrador/tipo_servicio_adm.html" class="btn-cancelar">Volver</a>
+                    <a href="../opc_Administrador/tipo_servicio_adm.html" class="btn-cancelar">Volver</a>
                     <button type="submit" class="btn-guardar">GUARDAR CONFIGURACIÓN</button>
                 </div>
 
             </form>
         </div>
     </main>
-    
-    <script src="../js/bootstrap.bundle.min.js"></script>
-    <script src="../../opc_Administrador/javasrip-editar_y_agregar_opc_admin/Update-Configurar_tarifas.js"></script>
+
+    <script src="../JavaScrip/configurar_tarifas.js"></script>
 </body>
 </html>

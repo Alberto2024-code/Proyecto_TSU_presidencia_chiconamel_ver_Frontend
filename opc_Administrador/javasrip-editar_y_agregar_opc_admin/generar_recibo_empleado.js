@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnIrManual = document.getElementById('btnIrManual');
     if (btnIrManual) {
         btnIrManual.addEventListener('click', () => {
-            window.location.href = `/html/recibo_configurar_manual.html?cuenta=${cuentaCiudadano}`;
+            window.location.href = `../html/recibo_configurar_manual.html?cuenta=${cuentaCiudadano}`;
         });
     }
 
@@ -30,11 +30,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     await cargarDatosDelRecibo(cuentaCiudadano);
 });
 
+// =========================================================================
+// CARGA DE DATOS DEL RECIBO (CON RESPALDO EN LOCALHOST)
+// =========================================================================
 async function cargarDatosDelRecibo(cuenta) {
+    const endpointRecibo = `/api/recibo/${cuenta}`;
+    let response;
+
     try {
-        const response = await fetch(`http://localhost:3000/api/recibo/${cuenta}`);
-        
-        if (!response.ok) throw new Error('No se encontró información para este ciudadano.');
+        // 💡 1. Primer intento: IP dinámica actual
+        response = await fetch(`http://${window.location.hostname}:3000${endpointRecibo}`);
+    } catch (netError) {
+        console.warn("⚠️ Falló la conexión por IP/Red. Intentando conexión local directa (localhost)...");
+        try {
+            // 🔄 2. Segundo intento (Respaldo sin red / TP-Link apagado): conecta a localhost
+            response = await fetch(`http://localhost:3000${endpointRecibo}`);
+        } catch (localError) {
+            console.error('❌ Error crítico en la petición del recibo:', localError);
+            alert('Error de conexión. Asegúrate de que el servidor de backend esté corriendo.');
+            return;
+        }
+    }
+
+    try {
+        if (!response || !response.ok) {
+            throw new Error('No se encontró información para este ciudadano.');
+        }
 
         // El controlador devuelve un objeto plano {}
         const info = await response.json();
@@ -70,10 +91,14 @@ async function cargarDatosDelRecibo(cuenta) {
 
         // Definición explícita de conceptos financieros para el cálculo
         const contrato = 0.00;        
-        const tomasAgua = 1.00; // Valor entero representativo en el recibo       
+        const tomasAgua = 1.00; // Valor entero representativo en el recibo        
         const rezagos = 0.00;         
         const recargos = 0.00;  
-        const iva = 0.00; // Ajusta según la lógica de tu municipio si aplica IVA o no
+        let iva = 6.00;
+       
+        if (info.tipo_servicio === 3 || servicioNombre.includes('domestico_2') || servicioNombre.includes('domestico 2')) {
+            iva = 7.00;
+        }
         const descuentos = 0.00;
 
         document.getElementById('imp-contrato').textContent = `$ ${contrato.toFixed(2)}`;
@@ -101,7 +126,9 @@ async function cargarDatosDelRecibo(cuenta) {
     }
 }
 
-// Función vinculada al botón verde para guardar la fila en la tabla recibos
+// =========================================================================
+// GENERAR Y GUARDAR RECIBO INDIVIDUAL (CON RESPALDO EN LOCALHOST)
+// =========================================================================
 async function generarYGuardarRecibo() {
     if (!datosCivilGlobal || !datosCivilGlobal.valoresCalculados) {
         alert('Faltan los datos financieros del civil para poder efectuar el registro.');
@@ -133,18 +160,34 @@ async function generarYGuardarRecibo() {
         estado_recibo: estadoElegido
     };
 
+    const btn = document.getElementById('btnGenerar');
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Procesando registro...';
+    }
+
+    const endpointGuardar = '/api/recibo/guardar-individual';
+    const opcionesGuardar = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cuerpoPeticion)
+    };
+
+    let response;
+
     try {
-        const btn = document.getElementById('btnGenerar');
-        if (btn) {
-            btn.disabled = true;
-            btn.textContent = 'Procesando registro...';
+        try {
+            // 💡 1. Primer intento: IP dinámica actual
+            response = await fetch(`http://${window.location.hostname}:3000${endpointGuardar}`, opcionesGuardar);
+        } catch (netError) {
+            console.warn("⚠️ Falló la conexión por IP/Red. Intentando conexión local directa (localhost)...");
+            // 🔄 2. Segundo intento (Respaldo sin red / TP-Link apagado): conecta a localhost
+            response = await fetch(`http://localhost:3000${endpointGuardar}`, opcionesGuardar);
         }
 
-        const response = await fetch('http://localhost:3000/api/recibo/guardar-individual', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(cuerpoPeticion)
-        });
+        if (!response) {
+            throw new Error('No se obtuvo respuesta del servidor backend.');
+        }
 
         const data = await response.json();
 
@@ -155,7 +198,7 @@ async function generarYGuardarRecibo() {
             const acciones = document.querySelector('.acciones-recibo');
             if (acciones) acciones.style.display = 'none';
 
-            window.location.href = '../../html/barrios_chiconamel.html';
+            window.location.href = '../html/barrios_chiconamel.html';
         } else {
             alert(`Error del servidor: ${data.message}`);
             if (btn) {
@@ -164,9 +207,8 @@ async function generarYGuardarRecibo() {
             }
         }
     } catch (error) {
-        console.error('Error en la conexión HTTP:', error);
+        console.error('Error en la conexión HTTP al guardar recibo:', error);
         alert('Ocurrió un fallo en la red de comunicación con tu servidor API.');
-        const btn = document.getElementById('btnGenerar');
         if (btn) {
             btn.disabled = false;
             btn.textContent = 'GENERAR RECIBO Y GUARDAR';
@@ -178,7 +220,7 @@ async function generarYGuardarRecibo() {
 function numeroALetras(num) {
     const Unidades = num => ['','UN','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE'][num];
     const Decenas = num => ['','DIEZ','VEINTE','TREINTA','CUARENTA','CINCUENTA','SESENTA','SETENTA','OCHENTA','NOVENTA'][num];
-    const DiezAVeinte = num => ['DIEZ','ONCE','DOCE','TRECE','CATORCE','QUINCE','DIECISEIS','DIECISETE','DIECIOCHO','DIECINUEVE'][num - 10];
+    const DiezAVeinte = num => ['DIEZ','ONCE','DOCE','TRECE','CATORCE','QUINCE','DIECISEIS','DIECISOCHO','DIECINUEVE'][num - 10];
     
     let enteros = Math.floor(num);
     let centavos = Math.round((num - enteros) * 100);

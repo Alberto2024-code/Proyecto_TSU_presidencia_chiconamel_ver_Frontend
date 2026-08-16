@@ -1,4 +1,18 @@
 // ==========================================
+// FUNCIÓN AUXILIAR CON TOLERANCIA A FALLOS (Host/IP -> Localhost)
+// ==========================================
+async function fetchConFallback(endpoint, opciones = {}) {
+    try {
+        // 💡 1. Primer intento: Host/IP dinámica detectada en la URL
+        return await fetch(`http://${window.location.hostname}:3000${endpoint}`, opciones);
+    } catch (netError) {
+        console.warn(`⚠️ Falló la conexión por IP/Red (${endpoint}). Intentando fallback a localhost...`);
+        // 🔄 2. Segundo intento (Respaldo sin red local): localhost
+        return await fetch(`http://localhost:3000${endpoint}`, opciones);
+    }
+}
+
+// ==========================================
 // 1. INICIALIZACIÓN Y CONFIGURACIÓN DEL CONTEXTO
 // ==========================================
 document.addEventListener('DOMContentLoaded', async () => {
@@ -25,7 +39,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function cargarComunidades() {
     const selectComunidad = document.getElementById('comunidad');
     try {
-        const response = await fetch('http://localhost:3000/api/comunidades/comunidades');
+        const response = await fetchConFallback('/api/comunidades/comunidades');
+        if (!response.ok) throw new Error('Error en respuesta del servidor al obtener comunidades.');
+
         const comunidades = await response.json();
 
         selectComunidad.innerHTML = '<option value="">-- Selecciona una Comunidad --</option>';
@@ -41,11 +57,13 @@ async function cargarComunidades() {
     }
 }
 
-// 🎯 NUEVA FUNCIÓN: Carga las calles en el nuevo select
+// 🎯 Carga las calles en el select
 async function cargarDomicilios() {
     const selectDomicilio = document.getElementById('domicilio');
     try {
-        const response = await fetch('http://localhost:3000/api/civiles/domicilios');
+        const response = await fetchConFallback('/api/civiles/domicilios');
+        if (!response.ok) throw new Error('Error en respuesta del servidor al obtener domicilios.');
+
         const domicilios = await response.json();
 
         selectDomicilio.innerHTML = '<option value="">-- Selecciona una Calle/Domicilio --</option>';
@@ -66,7 +84,7 @@ async function cargarDomicilios() {
 // ==========================================
 async function cargarDatosCivil(id) {
     try {
-        const response = await fetch(`http://localhost:3000/api/civiles/civiles/${id}`);
+        const response = await fetchConFallback(`/api/civiles/civiles/${id}`);
         if (!response.ok) throw new Error('No se pudo obtener la información del ciudadano.');
 
         const civil = await response.json();
@@ -76,7 +94,6 @@ async function cargarDatosCivil(id) {
         document.getElementById('apellido_materno').value = civil.apellido_materno || '';
         
         // 🎯 SELECCIÓN AUTOMÁTICA DEL DOMICILIO: Mapea con el ID devuelto por el backend
-        // Si tu backend devuelve el ID en otra propiedad (ej: civil.id_domicilio), cámbialo aquí
         document.getElementById('domicilio').value        = civil.id_domicilio || civil.domicilio || '';
         
         const inputCuenta = document.getElementById('cuenta-no') || document.getElementById('cuenta_no');
@@ -146,7 +163,7 @@ document.getElementById('formUsuario').addEventListener('submit', async (e) => {
     };
 
     try {
-        const response = await fetch(`http://localhost:3000/api/civiles/Update/${id}`, {
+        const response = await fetchConFallback(`/api/civiles/Update/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -154,11 +171,13 @@ document.getElementById('formUsuario').addEventListener('submit', async (e) => {
             body: JSON.stringify(civilModificado)
         });
 
+        if (!response) throw new Error('No se obtuvo respuesta del servidor backend.');
+
         const data = await response.json();
 
         if (response.ok) {
             alert('¡Los datos del civil se actualizaron con éxito!');
-            window.location.href = '../../opc_Administrador/civilesDeComunidades.html';
+            window.location.href = '../opc_Administrador/civilesDeComunidades.html';
         } else {
             alert(`Error en el servidor: ${data.message || 'No se pudo actualizar el registro.'}`);
         }
@@ -168,4 +187,3 @@ document.getElementById('formUsuario').addEventListener('submit', async (e) => {
         alert('Hubo un error de conexión con el servidor de base de datos.');
     }
 });
-

@@ -11,20 +11,40 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// 📌 1. CARGAR Y AGRUPAR REZAGADOS POR CIUDADANO (CUENTA NO)
+// =========================================================================
+// 📌 1. CARGAR Y AGRUPAR REZAGADOS POR CIUDADANO (CON RESPALDO EN LOCALHOST)
+// =========================================================================
 async function cargarTablaRezagadosPendientes() {
     // Buscamos la tabla dentro del DOM
     const tbody = document.querySelector("tbody") || document.getElementById("tabla-rezagados");
-    const URL_API = "http://localhost:3000/api/adeudos/";
 
     if (!tbody) {
         console.error("No se encontró la tabla en el HTML.");
         return;
     }
 
+    const endpointAdeudos = '/api/adeudos/';
+    let respuesta;
+
     try {
-        const respuesta = await fetch(URL_API);
-        if (!respuesta.ok) throw new Error("Error al consultar la API de adeudos.");
+        // 💡 1. Primer intento: IP dinámica actual
+        respuesta = await fetch(`http://${window.location.hostname}:3000${endpointAdeudos}`);
+    } catch (netError) {
+        console.warn("⚠️ Falló la conexión por IP/Red. Intentando conexión local directa (localhost)...");
+        try {
+            // 🔄 2. Segundo intento (Respaldo sin red / TP-Link apagado): conecta a localhost
+            respuesta = await fetch(`http://localhost:3000${endpointAdeudos}`);
+        } catch (localError) {
+            console.error("❌ Error crítico al consultar la API de adeudos:", localError);
+            tbody.innerHTML = `<tr><td colspan="12" style="text-align:center; color:red; padding:20px;">Error crítico de conexión. Verifica que el servidor backend de Node.js esté activo.</td></tr>`;
+            return;
+        }
+    }
+
+    try {
+        if (!respuesta || !respuesta.ok) {
+            throw new Error("Error al consultar la API de adeudos.");
+        }
 
         const listaAdeudos = await respuesta.json();
 
@@ -94,7 +114,7 @@ async function cargarTablaRezagadosPendientes() {
                 <td>${(item.domicilio || '5 DE MAYO').toUpperCase()}</td>
                 <td>${tipoServicioTexto}</td>
                 <td style="font-weight: bold; color: #2b2b2b;">$${item.monto_total.toFixed(2)}</td>
-                <td><span style="color: #d9534f; font-weight: bold;  padding: 3px 8px; border-radius: 4px;">PENDIENTE</span></td>
+                <td><span style="color: #d9534f; font-weight: bold; padding: 3px 8px; border-radius: 4px;">PENDIENTE</span></td>
                 <td>
                     <a href="recibo_adeudos.html?id_adeudo=${item.id_adeudo_inicial}&cuenta=${item.cuenta_no}&rol=${rolParam}" 
                        class="btn-recibo" 
@@ -108,8 +128,8 @@ async function cargarTablaRezagadosPendientes() {
         });
 
     } catch (error) {
-        console.error("Error al cargar y estructurar la tabla de rezagados:", error);
-        tbody.innerHTML = `<tr><td colspan="12" style="text-align:center; color:red; padding:20px;">Error al conectar con la base de datos local.</td></tr>`;
+        console.error("❌ Error al procesar la tabla de rezagados:", error);
+        tbody.innerHTML = `<tr><td colspan="12" style="text-align:center; color:red; padding:20px;">Error al procesar los datos de la base de datos local.</td></tr>`;
     }
 }
 

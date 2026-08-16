@@ -15,12 +15,28 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function cargarReciboAnual(cuenta, anio) {
+    const endpointRecibo = `/api/recibo/recibos-anuales/${cuenta}`;
+    let response;
+
     try {
-        // Petición a tu endpoint anual en Express
-        const response = await fetch(`http://localhost:3000/api/recibo/recibos-anuales/${cuenta}`);
-        
-        if (!response.ok) {
-            throw new Error(`Error en la petición: ${response.statusText}`);
+        // 💡 1. Primer intento: IP dinámica actual
+        response = await fetch(`http://${window.location.hostname}:3000${endpointRecibo}`);
+    } catch (netError) {
+        console.warn("⚠️ Falló la conexión por IP/Red. Intentando conexión local directa (localhost)...");
+        try {
+            // 🔄 2. Segundo intento (Respaldo sin red / TP-Link apagado): conecta a localhost
+            response = await fetch(`http://localhost:3000${endpointRecibo}`);
+        } catch (localError) {
+            console.error("❌ Error crítico al cargar la información del recibo anual:", localError);
+            document.getElementById("cliente-nombre").textContent = "Error de conexión con el servidor";
+            alert("No se pudo establecer conexión con el servidor backend (Puerto 3000).");
+            return;
+        }
+    }
+
+    try {
+        if (!response || !response.ok) {
+            throw new Error(`Error en la petición: ${response ? response.statusText : 'Sin respuesta'}`);
         }
 
         const data = await response.json();
@@ -42,16 +58,16 @@ async function cargarReciboAnual(cuenta, anio) {
         renderizarRecibo(recibo);
 
     } catch (error) {
-        console.error("Error al cargar la información del recibo anual:", error);
+        console.error("Error al procesar los datos del recibo anual:", error);
         document.getElementById("cliente-nombre").textContent = "Error al cargar los datos";
     }
 }
 
 function renderizarRecibo(r) {
-    // A. Folio (Usa un formato representativo para la constancia anual)
+    // A. Folio
     document.getElementById("recibo-folio").textContent = `ANUAL-${r.anio || '--'}`;
 
-    // B. Procesar Fecha (Si no hay fecha de pago, usamos la fecha de consulta)
+    // B. Procesar Fecha
     const fecha = r.fecha_pago ? new Date(r.fecha_pago) : new Date();
     const dia = String(fecha.getUTCDate()).padStart(2, '0');
     const anioActual = fecha.getUTCFullYear();
@@ -69,63 +85,87 @@ function renderizarRecibo(r) {
     // C. Datos del Ciudadano y Servicio
     const nombreCompleto = `${r.nombre || ''} ${r.apellido_paterno || ''} ${r.apellido_materno || ''}`.trim();
     document.getElementById("cliente-nombre").textContent = nombreCompleto || "C. CIUDADANO";
-    document.getElementById("cliente-domicilio").textContent = r.domicilio || r.comunidad || "CONOCIDO";
+    document.getElementById("cliente-domicilio").textContent = `${r.domicilio || ''} ${r.comunidad || ''}`.trim();
     
-    // Mostramos los meses consolidados (ej: "ENERO, FEBRERO, MARZO...") o el año
-    document.getElementById("recibo-mes-pago").textContent = r.meses_pagados || `TODO EL AÑO ${r.anio}`;
-    document.getElementById("cliente-cuenta").textContent = r.cuenta_no || "N/A";
+    const textoMeses = r.meses_pagados || r.meses || `TODO EL AÑO ${r.anio}`;
+    document.getElementById("recibo-mes-pago").textContent = textoMeses;
+    document.getElementById("cliente-cuenta").textContent = r.cuenta_no || r.cuenta || "N/A";
 
-    // D. Formatear Importes
-    const formatearMoneda = (valor) => {
-        const num = parseFloat(valor) || 0;
-        return `$ ${num.toFixed(2)}`;
-    };
-
-    // Evaluamos el tipo de servicio
-    const tipoServicio = (r.nombre_tipo_servicio || r.tipo_servicio || '').toLowerCase();
-    
-    let dom = 0, com = 0;
-    const totalAnual = parseFloat(r.total_anual_pagado || r.total) || 0;
-
-    if (tipoServicio.includes("comercial")) {
-        com = totalAnual;
-    } else {
-        dom = totalAnual;
+    // D. Calcular número de meses pagados (Ej: "OCTUBRE, NOVIEMBRE" = 2)
+    let numMeses = 1;
+    if (typeof textoMeses === 'string' && textoMeses.includes(',')) {
+        numMeses = textoMeses.split(',').map(m => m.trim()).filter(Boolean).length;
+    } else if (Array.isArray(textoMeses)) {
+        numMeses = textoMeses.length;
+    } else if (r.es_pago_anual === 1 || String(textoMeses).toLowerCase().includes('todo')) {
+        numMeses = 12;
     }
 
-    document.getElementById("imp-domestico").textContent = formatearMoneda(dom);
-    document.getElementById("imp-comercial").textContent = formatearMoneda(com);
-    document.getElementById("imp-contrato").textContent = formatearMoneda(0);
-    document.getElementById("imp-tomas").textContent = formatearMoneda(0);
-    document.getElementById("imp-rezagos").textContent = formatearMoneda(r.total_rezagos || 0);
-    document.getElementById("imp-recargos").textContent = formatearMoneda(r.total_recargos || 0);
-    document.getElementById("imp-iva").textContent = formatearMoneda(r.total_iva || 0);
-    document.getElementById("imp-descuento").textContent = formatearMoneda(r.total_descuentos || 0);
+    // E. Cuotas fijas base por mes
+    const tarifaBasePura = 54.00; // Cuota doméstica ($54/mes)
+    const adicionalUnitario = 6.00; // Adicional ($6/mes)
 
-    // E. Total Anual
-    document.getElementById("imp-total").textContent = formatearMoneda(totalAnual);
+    // F. Multiplicar por cantidad de meses
+    const tipoServicio = String(r.nombre_tipo_servicio || r.tipo_servicio || '').toLowerCase();
+    const esComercial = tipoServicio.includes("comercial") || tipoServicio === '2';
 
-    // F. Convertir Total a Letras
-    document.getElementById("total-letras").textContent = numeroALetras(totalAnual);
+    const subtotalServicio = tarifaBasePura * numMeses; // 2 x $54 = $108.00
+    const adicionalTotal = adicionalUnitario * numMeses; // 2 x $6 = $12.00
+
+    // Conceptos únicos traídos de BD
+    const contrato = parseFloat(r.contrato || 0);
+    const tomas = parseInt(r.tomas_agua || r.tomas || 1);
+    const rezagos = parseFloat(r.total_rezagos || r.rezagos || 0);
+    const recargos = parseFloat(r.total_recargos || r.recargos || 0);
+    const descuento = parseFloat(r.total_descuentos || r.descuentos || 0);
+
+    const formatearMoneda = (valor) => `$ ${(parseFloat(valor) || 0).toFixed(2)}`;
+
+    // G. Pintar en los elementos HTML
+    document.getElementById("imp-domestico").textContent = formatearMoneda(esComercial ? 0 : subtotalServicio);
+    document.getElementById("imp-comercial").textContent = formatearMoneda(esComercial ? subtotalServicio : 0);
+    document.getElementById("imp-contrato").textContent = formatearMoneda(contrato);
+    document.getElementById("imp-tomas").textContent = tomas;
+    document.getElementById("imp-rezagos").textContent = formatearMoneda(rezagos);
+    document.getElementById("imp-recargos").textContent = formatearMoneda(recargos);
+    document.getElementById("imp-iva").textContent = formatearMoneda(adicionalTotal);
+    document.getElementById("imp-descuento").textContent = formatearMoneda(descuento);
+
+    // H. Suma matemática exacta: $108.00 + $12.00 + $8.00 = $128.00
+    const totalSumaReal = Math.max(0, (subtotalServicio + contrato + rezagos + recargos + adicionalTotal) - descuento);
+
+    // I. Colocar el Total y la conversión en Letras
+    document.getElementById("imp-total").textContent = formatearMoneda(totalSumaReal);
+    document.getElementById("total-letras").textContent = numeroALetras(totalSumaReal);
 }
 
-// // Función de conversión de número a letras
-function numeroALetras(numero) {
-    const formatoCentavos = `PESOS ${(numero % 1 * 100).toFixed(0).padStart(2, '0')}/100 M.N.`;
-    const entero = Math.floor(numero);
-
-    const equivalencias = {
-        60: "SESENTA", 120: "CIENTO VEINTE", 180: "CIENTO OCHENTA",
-        240: "DOSCIENTOS CUARENTA", 300: "TRESCIENTOS", 360: "TRESCIENTOS SESENTA",
-        420: "CUATROCIENTOS VEINTE", 480: "CUATROCIENTOS OCHENTA", 540: "QUINIENTOS CUARENTA",
-        600: "SEISCIENTOS", 660: "SEISCIENTOS SESENTA", 720: "SETECIENTOS VEINTE",
-        780: "SETECIENTOS OCHENTA", 840: "OCHOCIENTOS CUARENTA", 900: "NOVECIENTOS",
-        960: "NOVECIENTOS SESENTA", 1020: "MIL VEINTE"
-    };
-
-    if (equivalencias[entero]) {
-        return `${equivalencias[entero]} ${formatoCentavos}`;
-    }
+// Función auxiliar para convertir números a letras
+function numeroALetras(num) {
+    if (num <= 0) return 'CERO PESOS 00/100 M.N.';
+    const Unidades = num => ['','UN','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE'][num];
+    const Decenas = num => ['','DIEZ','VEINTE','TREINTA','CUARENTA','CINCUENTA','SESENTA','SETENTA','OCHENTA','NOVENTA'][num];
+    const DiezAVeinte = num => ['DIEZ','ONCE','DOCE','TRECE','CATORCE','QUINCE','DIECISEIS','DIECINUEVE'][num - 10];
     
-    return `${entero} ${formatoCentavos}`;
+    let enteros = Math.floor(num);
+    let centavos = Math.round((num - enteros) * 100);
+    let letras = '';
+
+    if (enteros === 0) letras = 'CERO';
+    else if (enteros < 10) letras = Unidades(enteros);
+    else if (enteros < 20) letras = DiezAVeinte(enteros);
+    else if (enteros < 100) {
+        let u = enteros % 10;
+        let d = Math.floor(enteros / 10);
+        letras = d === 2 && u > 0 ? `VEINTI${Unidades(u)}` : `${Decenas(d)}${u > 0 ? ' Y ' + Unidades(u) : ''}`;
+    } else if (enteros < 1000) {
+        let d_u = enteros % 100;
+        let c = Math.floor(enteros / 100);
+        let textoCentena = ['','CIENTO','DOSCIENTOS','TRESCIENTOS','CUATROCIENTOS','QUINIENTOS','SEISCIENTOS','SETECIENTOS','OCHOCIENTOS','NOVECIENTOS'][c];
+        if (c === 1 && d_u === 0) textoCentena = 'CIEN';
+        letras = `${textoCentena} ${numeroALetras(d_u).split(' PESOS')[0]}`;
+    } else {
+        letras = `${enteros}`;
+    }
+
+    return `${letras.trim()} PESOS ${String(centavos).padStart(2, '0')}/100 M.N.`.toUpperCase();
 }

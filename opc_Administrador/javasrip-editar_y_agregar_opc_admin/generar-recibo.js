@@ -12,6 +12,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // Programar el botón para que redirija al modo manual con la misma cuenta
+    const btnIrManual = document.getElementById('btnIrManual');
+    if (btnIrManual) {
+        btnIrManual.addEventListener('click', () => {
+            window.location.href = `../../opc_Administrador/recibo_configurar_manual_adm.html?cuenta=${cuentaCiudadano}`;
+        });
+    }
+
     // 2. Cargamos la fecha actual en los campos correspondientes del recibo impreso
     const fecha = new Date();
     document.getElementById('fecha-dia').textContent = String(fecha.getDate()).padStart(2, '0');
@@ -20,28 +28,39 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 3. Consultamos el endpoint usando la cuenta del ciudadano
     await cargarDatosDelRecibo(cuentaCiudadano);
-
-    // 4. Programar el botón para redirigir al modo manual
-    const btnIrManual = document.getElementById('btnIrManual');
-    if (btnIrManual) {
-        btnIrManual.addEventListener('click', () => {
-            window.location.href = `../../opc_Administrador/recibo_configurar_manual_adm.html?cuenta=${cuentaCiudadano}`;
-        });
-    }
 });
 
+// =========================================================================
+// CARGA DE DATOS DEL RECIBO (CON RESPALDO EN LOCALHOST)
+// =========================================================================
 async function cargarDatosDelRecibo(cuenta) {
-    try {
-        const response = await fetch(`http://localhost:3000/api/recibo/${cuenta}`);
-        
-        if (!response.ok) throw new Error('No se encontró información para este ciudadano.');
+    const endpointRecibo = `/api/recibo/${cuenta}`;
+    let response;
 
+    try {
+        // 💡 1. Primer intento: IP/Host dinámico según el navegador
+        response = await fetch(`http://${window.location.hostname}:3000${endpointRecibo}`);
+    } catch (netError) {
+        console.warn("⚠️ Falló la conexión por IP/Red. Intentando conexión local directa (localhost)...");
+        try {
+            // 🔄 2. Segundo intento (Respaldo en caso de fallo de red local): conecta a localhost
+            response = await fetch(`http://localhost:3000${endpointRecibo}`);
+        } catch (localError) {
+            console.error('❌ Error crítico en la petición del recibo:', localError);
+            alert('Error de conexión. Asegúrate de que el servidor de backend esté corriendo.');
+            return;
+        }
+    }
+
+    try {
+        if (!response || !response.ok) {
+            throw new Error('No se encontró información para este ciudadano.');
+        }
+
+        // El controlador devuelve un objeto plano {}
         const info = await response.json();
         
-        // 🔍 DIAGNÓSTICO EN CONSOLA (Abre F12 para ver qué datos trae la BD)
-        console.log("DATOS RECIBIDOS DEL BACKEND:", info);
-
-        if (!info || (!info.nombre && !info.nombre_ciudadano)) {
+        if (!info || !info.nombre) {
             alert('El servidor no devolvió datos válidos para este número de cuenta.');
             return;
         }
@@ -49,32 +68,37 @@ async function cargarDatosDelRecibo(cuenta) {
         datosCivilGlobal = info; // Almacenamos para el guardado posterior
 
         // Rellenar cabecera e información del ciudadano
-        document.getElementById('recibo-folio').textContent = info.numero_recibo ? `No. ${String(info.numero_recibo).padStart(4, '0')}` : "No. PENDIENTE";
-        document.getElementById('cliente-nombre').textContent = `${info.nombre || ''} ${info.apellido_paterno || ''} ${info.apellido_materno || ''}`.trim().toUpperCase();
-        document.getElementById('cliente-domicilio').textContent = `${info.domicilio || 'CONOCIDO'}, ${info.nombre_comunidad || info.comunidad || ''}`.toUpperCase();
-        document.getElementById('cliente-cuenta').textContent = info.cuenta_no || cuenta || '--';
-        
-        const mesActualTexto = mesesAnio[new Date().getMonth()].toUpperCase();
-        document.getElementById('recibo-mes-pago').textContent = info.mes_pagado || mesActualTexto;
+        document.getElementById('recibo-folio').textContent = "No. PENDIENTE";
+        document.getElementById('cliente-nombre').textContent = `${info.nombre} ${info.apellido_paterno} ${info.apellido_materno || ''}`.toUpperCase();
+        document.getElementById('cliente-domicilio').textContent = `${info.domicilio || 'CONOCIDO'}, ${info.nombre_comunidad}`.toUpperCase();
+        document.getElementById('cliente-cuenta').textContent = info.cuenta_no || '--';
+        document.getElementById('recibo-mes-pago').textContent = mesesAnio[new Date().getMonth()].toUpperCase();
 
         // Limpiar importes por defecto en la tabla
         document.getElementById('imp-domestico').textContent = "$ 0.00";
         document.getElementById('imp-comercial').textContent = "$ 0.00";
 
-        // Asignar el monto de la tarifa de forma dinámica
-        const montoBase = parseFloat(info.monto || info.monto_debe || info.total || 0);
-        if (info.tipo_servicio === 1 || String(info.nombre_servicio || info.tipo_servicio).toLowerCase() === 'domestico') {
+        // 🎯 AJUSTE DOMESTICO 2:
+        // Evaluamos si es Doméstico (1), Doméstico 2 (3), o si la propiedad de texto incluye "domestico"
+        const montoBase = parseFloat(info.monto || 0);
+        const servicioNombre = (info.nombre_servicio || info.tipo_servicio_nombre || '').toLowerCase();
+
+        if (info.tipo_servicio === 1 || info.tipo_servicio === 3 || servicioNombre.includes('domestico')) {
             document.getElementById('imp-domestico').textContent = `$ ${montoBase.toFixed(2)}`;
         } else {
             document.getElementById('imp-comercial').textContent = `$ ${montoBase.toFixed(2)}`;
         }
 
-        // Conceptos financieros
+        // Definición explícita de conceptos financieros para el cálculo
         const contrato = 0.00;        
-        const tomasAgua = parseFloat(info.tomas_agua || 1.00);      
+        const tomasAgua = 1.00; // Valor entero representativo en el recibo        
         const rezagos = 0.00;         
         const recargos = 0.00;  
-        const iva = 6.00; 
+        let iva = 6.00;
+       
+        if (info.tipo_servicio === 3 || servicioNombre.includes('domestico_2') || servicioNombre.includes('domestico 2')) {
+            iva = 7.00;
+        }
         const descuentos = 0.00;
 
         document.getElementById('imp-contrato').textContent = `$ ${contrato.toFixed(2)}`;
@@ -84,34 +108,17 @@ async function cargarDatosDelRecibo(cuenta) {
         document.getElementById('imp-iva').textContent = `$ ${iva.toFixed(2)}`;
         document.getElementById('imp-descuento').textContent = `$ ${descuentos.toFixed(2)}`;
         
-        // Calcular el total
+        // Calcular el gran total acumulado de forma segura
         const totalFinal = (montoBase + contrato + rezagos + recargos + iva) - descuentos;
         document.getElementById('imp-total').innerHTML = `<strong>$ ${totalFinal.toFixed(2)}</strong>`;
 
+        // Guardamos los montos calculados en el estado global para el guardado
         datosCivilGlobal.valoresCalculados = {
             contrato, tomasAgua, rezagos, recargos, iva, descuentos, totalFinal
         };
 
+        // Colocar el importe con letra
         document.getElementById('total-letras').textContent = numeroALetras(totalFinal);
-
-        // =================================================================
-        // 🛑 VALIDACIÓN DE PAGO (Detecta múltiples nombres de campos)
-        // =================================================================
-        const estadoEvaluado = String(
-            info.estado_recibo || 
-            info.estado || 
-            info.estatus || 
-            info.estado_pago || ''
-        ).toUpperCase().trim();
-
-        const esPagadoNumerico = info.pagado === 1 || info.pagado === true || info.id_recibo != null && info.fecha_pago != null;
-
-        if (estadoEvaluado === 'PAGADO' || estadoEvaluado === 'LIQUIDADO' || esPagadoNumerico) {
-            bloquearBotonPago(` ATENCIÓN: La cuenta ${cuenta} ya registra pago para ${info.mes_pagado || mesActualTexto}.`);
-        } else {
-            // Consulta de respaldo por si el endpoint de la cuenta no devuelve la tabla de pagos
-            verificarPagoEnBackend(cuenta, mesActualTexto);
-        }
 
     } catch (error) {
         console.error('Error al cargar la plantilla del recibo:', error);
@@ -119,47 +126,9 @@ async function cargarDatosDelRecibo(cuenta) {
     }
 }
 
-// 📌 Función de respaldo que pregunta a la lista de pagos de la API
-async function verificarPagoEnBackend(cuenta, mes) {
-    try {
-        const res = await fetch(`http://localhost:3000/api/adeudos/`);
-        if (!res.ok) return;
-
-        const adeudos = await res.json();
-        
-        // Buscar si existe un pago registrado para esta cuenta
-        const pagado = adeudos.some(a => 
-            String(a.cuenta_no) === String(cuenta) && 
-            String(a.estado).toUpperCase() === 'PAGADO' &&
-            String(a.mes_adeudo || a.mes_pagado).toUpperCase() === mes
-        );
-
-        if (pagado) {
-            bloquearBotonPago(`⚠️ ESTE RECIBO YA FUE PAGADO EN SISTEMA (${mes}).`);
-        }
-    } catch (e) {
-        console.warn("No se pudo realizar la doble verificación de pago:", e);
-    }
-}
-
-// 📌 Función helper para congelar el botón
-function bloquearBotonPago(mensaje) {
-    alert(mensaje);
-    const btnGenerar = document.getElementById('btnGenerar');
-    if (btnGenerar) {
-        btnGenerar.disabled = true;
-        btnGenerar.textContent = 'RECIBO YA LIQUIDADO (PAGADO)';
-        btnGenerar.style.backgroundColor = '#6c757d'; 
-        btnGenerar.style.borderColor = '#6c757d';
-        btnGenerar.style.cursor = 'not-allowed';
-        
-        // Clona el botón para eliminar cualquier eventListener previo que pueda activarlo
-        const btnClonado = btnGenerar.cloneNode(true);
-        btnGenerar.parentNode.replaceChild(btnClonado, btnGenerar);
-    }
-}
-
-// Función para guardar
+// =========================================================================
+// GENERAR Y GUARDAR RECIBO INDIVIDUAL (CON RESPALDO EN LOCALHOST)
+// =========================================================================
 async function generarYGuardarRecibo() {
     if (!datosCivilGlobal || !datosCivilGlobal.valoresCalculados) {
         alert('Faltan los datos financieros del civil para poder efectuar el registro.');
@@ -191,28 +160,44 @@ async function generarYGuardarRecibo() {
         estado_recibo: estadoElegido
     };
 
+    const btn = document.getElementById('btnGenerar');
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Procesando registro...';
+    }
+
+    const endpointGuardar = '/api/recibo/guardar-individual';
+    const opcionesGuardar = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cuerpoPeticion)
+    };
+
+    let response;
+
     try {
-        const btn = document.getElementById('btnGenerar');
-        if (btn) {
-            btn.disabled = true;
-            btn.textContent = 'Procesando registro...';
+        try {
+            // 💡 1. Primer intento: IP/Host dinámico según el navegador
+            response = await fetch(`http://${window.location.hostname}:3000${endpointGuardar}`, opcionesGuardar);
+        } catch (netError) {
+            console.warn("⚠️ Falló la conexión por IP/Red. Intentando conexión local directa (localhost)...");
+            // 🔄 2. Segundo intento (Respaldo en caso de fallo de red local): conecta a localhost
+            response = await fetch(`http://localhost:3000${endpointGuardar}`, opcionesGuardar);
         }
 
-        const response = await fetch('http://localhost:3000/api/recibo/guardar-individual', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(cuerpoPeticion)
-        });
+        if (!response) {
+            throw new Error('No se obtuvo respuesta del servidor backend.');
+        }
 
         const data = await response.json();
 
         if (response.ok) {
-            document.getElementById('recibo-folio').textContent = `No. ${String(data.numero_recibo || data.id_recibo || 1).padStart(4, '0')}`;
-            alert(data.message || `¡Recibo oficial guardado con éxito!`);
+            document.getElementById('recibo-folio').textContent = `No. ${String(data.numero_recibo).padStart(4, '0')}`;
+            alert(data.message || `¡Recibo oficial No. ${data.numero_recibo} guardado con éxito!`);
             
-            const contenedorAcciones = document.querySelector('.acciones-recibo');
-            if (contenedorAcciones) contenedorAcciones.style.display = 'none';
-            
+            const acciones = document.querySelector('.acciones-recibo');
+            if (acciones) acciones.style.display = 'none';
+
             window.location.href = '../../opc_Administrador/barrios_chiconamel_adm.html';
         } else {
             alert(`Error del servidor: ${data.message}`);
@@ -222,9 +207,8 @@ async function generarYGuardarRecibo() {
             }
         }
     } catch (error) {
-        console.error('Error en la conexión HTTP:', error);
+        console.error('Error en la conexión HTTP al guardar recibo:', error);
         alert('Ocurrió un fallo en la red de comunicación con tu servidor API.');
-        const btn = document.getElementById('btnGenerar');
         if (btn) {
             btn.disabled = false;
             btn.textContent = 'GENERAR RECIBO Y GUARDAR';
@@ -232,7 +216,7 @@ async function generarYGuardarRecibo() {
     }
 }
 
-// Conversión de números a letras
+// Algoritmo para conversión de números a letras
 function numeroALetras(num) {
     const Unidades = num => ['','UN','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE'][num];
     const Decenas = num => ['','DIEZ','VEINTE','TREINTA','CUARENTA','CINCUENTA','SESENTA','SETENTA','OCHENTA','NOVENTA'][num];
@@ -244,7 +228,7 @@ function numeroALetras(num) {
 
     if (enteros === 0) letras = 'CERO';
     else if (enteros < 10) letras = Unidades(enteros);
-    else if (enteros < 20) letters = DiezAVeinte(enteros);
+    else if (enteros < 20) letras = DiezAVeinte(enteros);
     else if (enteros < 100) {
         let u = enteros % 10;
         let d = Math.floor(enteros / 10);

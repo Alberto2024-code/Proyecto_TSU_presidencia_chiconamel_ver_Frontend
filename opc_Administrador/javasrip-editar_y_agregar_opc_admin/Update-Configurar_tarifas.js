@@ -1,3 +1,20 @@
+// ==========================================
+// FUNCIÓN AUXILIAR CON TOLERANCIA A FALLOS (Host/IP -> Localhost)
+// ==========================================
+async function fetchConFallback(endpoint, opciones = {}) {
+    try {
+        // 💡 1. Primer intento: Host/IP dinámica detectada en la URL
+        return await fetch(`http://${window.location.hostname}:3000${endpoint}`, opciones);
+    } catch (netError) {
+        console.warn(`⚠️ Falló la conexión por IP/Red (${endpoint}). Intentando fallback a localhost...`);
+        // 🔄 2. Segundo intento (Respaldo sin red local): localhost
+        return await fetch(`http://localhost:3000${endpoint}`, opciones);
+    }
+}
+
+// ==========================================
+// 1. INICIALIZACIÓN Y CONFIGURACIÓN DEL CONTEXTO
+// ==========================================
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Obtener el ID de la tarifa desde los parámetros de la URL (?id=...)
     const urlParams = new URLSearchParams(window.location.search);
@@ -12,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await obtenerDatosTarifa(tarifaId);
 
     // ==========================================
-    // NUEVA VALIDACIÓN DE FECHAS EN EL FRONT-END
+    // VALIDACIÓN DE FECHAS EN EL FRONT-END
     // ==========================================
     const fechaInicioInput = document.getElementById('fecha_inicio');
     const fechaTerminoInput = document.getElementById('fecha_termino');
@@ -42,29 +59,33 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 3. Escuchar el evento de envío del formulario para actualizar
     const formulario = document.getElementById('form-tarifas');
-    formulario.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    if (formulario) {
+        formulario.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        // Validación extra antes de enviar por si acaso
-        if (fechaInicioInput.value && fechaTerminoInput.value && fechaTerminoInput.value < fechaInicioInput.value) {
-            alert('La fecha de término de la promoción no puede ser menor a la fecha de inicio.');
-            return;
-        }
+            // Validación extra antes de enviar por si acaso
+            if (fechaInicioInput.value && fechaTerminoInput.value && fechaTerminoInput.value < fechaInicioInput.value) {
+                alert('La fecha de término de la promoción no puede ser menor a la fecha de inicio.');
+                return;
+            }
 
-        await actualizarTarifa(tarifaId);
-    });
+            await actualizarTarifa(tarifaId);
+        });
+    }
 });
 
-// Función para obtener los datos de la tarifa y rellenar los inputs
+// ==========================================
+// 2. CARGA DE DATOS ORIGINALES EN EL FORMULARIO
+// ==========================================
 async function obtenerDatosTarifa(id) {
     try {
-        const response = await fetch(`http://localhost:3000/api/tarifas/${id}`);
+        const response = await fetchConFallback(`/api/tarifas/${id}`);
         
-        if (!response.ok) {
-            if (response.status === 404) {
+        if (!response || !response.ok) {
+            if (response && response.status === 404) {
                 throw new Error(`La tarifa con el ID ${id} no existe en la base de datos.`);
             } else {
-                throw new Error(`El servidor respondió con un error (Código: ${response.status}).`);
+                throw new Error(`El servidor respondió con un error (Código: ${response ? response.status : 'Sin Respuesta'}).`);
             }
         }
 
@@ -90,7 +111,7 @@ async function obtenerDatosTarifa(id) {
         // AGREGADO: Forzamos la validación una vez que los campos se llenaron con los datos de la API
         const fechaInicioInput = document.getElementById('fecha_inicio');
         const fechaTerminoInput = document.getElementById('fecha_termino');
-        if(fechaInicioInput.value) {
+        if (fechaInicioInput && fechaInicioInput.value) {
             fechaTerminoInput.min = fechaInicioInput.value;
         }
         
@@ -100,7 +121,9 @@ async function obtenerDatosTarifa(id) {
     }
 }
 
-// Función para enviar los datos editados al backend mediante PUT
+// ==========================================
+// 3. PERSISTENCIA: ENVÍO DE ACTUALIZACIÓN (PUT)
+// ==========================================
 async function actualizarTarifa(id) {
     const datosModificados = {
         tipo_servicio: document.getElementById('tipo_servicio').value,
@@ -112,18 +135,25 @@ async function actualizarTarifa(id) {
         promocion_nombre: document.getElementById('promocion_name').value || ''
     };
 
-    try {
-        const botonGuardar = document.querySelector('.btn-guardar');
-        botonGuardar.disabled = true;
-        botonGuardar.textContent = 'Actualizando...';
+    const botonGuardar = document.querySelector('.btn-guardar');
 
-        const response = await fetch(`http://localhost:3000/api/tarifas/Update/${id}`, {
+    try {
+        if (botonGuardar) {
+            botonGuardar.disabled = true;
+            botonGuardar.textContent = 'Actualizando...';
+        }
+
+        const response = await fetchConFallback(`/api/tarifas/Update/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(datosModificados)
         });
+
+        if (!response) {
+            throw new Error('No se obtuvo respuesta del servidor backend.');
+        }
 
         const respuestaServidor = await response.json();
 
@@ -132,15 +162,16 @@ async function actualizarTarifa(id) {
             window.location.href = '../../opc_Administrador/tipo_servicio_adm.html';
         } else {
             alert(`Error: ${respuestaServidor.message || 'No se pudo actualizar la tarifa.'}`);
-            botonGuardar.disabled = false;
-            botonGuardar.textContent = 'GUARDAR CONFIGURACIÓN';
+            if (botonGuardar) {
+                botonGuardar.disabled = false;
+                botonGuardar.textContent = 'GUARDAR CONFIGURACIÓN';
+            }
         }
 
     } catch (error) {
         console.error('Error en la petición de actualización:', error);
         alert('Ocurrió un error de red al intentar comunicarse con el servidor.');
         
-        const botonGuardar = document.querySelector('.btn-guardar');
         if (botonGuardar) {
             botonGuardar.disabled = false;
             botonGuardar.textContent = 'GUARDAR CONFIGURACIÓN';

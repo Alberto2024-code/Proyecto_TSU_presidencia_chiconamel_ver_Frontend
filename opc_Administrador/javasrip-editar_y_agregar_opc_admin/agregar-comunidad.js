@@ -23,6 +23,17 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const btnSubmit = formUsuario.querySelector('.btn-submit');
+        const endpointCreate = '/api/comunidades/create_comunidad';
+
+        const opcionesFetch = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(datosEnvio)
+        };
+
+        let response;
 
         try {
             if (btnSubmit) {
@@ -30,14 +41,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 btnSubmit.textContent = 'Guardando...';
             }
 
-            // Petición POST al endpoint de creación
-            const response = await fetch('http://localhost:3000/api/comunidades/create_comunidad', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(datosEnvio)
-            });
+            try {
+                // 💡 1. Primer intento: IP dinámica actual
+                response = await fetch(`http://${window.location.hostname}:3000${endpointCreate}`, opcionesFetch);
+            } catch (netError) {
+                console.warn("⚠️ Falló la conexión por IP/Red. Intentando conexión local directa (localhost)...");
+                // 🔄 2. Segundo intento (Respaldo sin red / TP-Link apagado): conecta a localhost
+                response = await fetch(`http://localhost:3000${endpointCreate}`, opcionesFetch);
+            }
+
+            if (!response) {
+                throw new Error('No se obtuvo respuesta del servidor backend.');
+            }
 
             const data = await response.json();
 
@@ -55,8 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
         } catch (error) {
-            console.error('Error de conexión:', error);
-            alert('Error al conectar con el servidor API.');
+            console.error('❌ Error de conexión:', error);
+            alert('Error al conectar con el servidor API o el servicio local está apagado.');
             if (btnSubmit) {
                 btnSubmit.disabled = false;
                 btnSubmit.textContent = 'Guardar Comunidad';

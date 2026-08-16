@@ -33,25 +33,55 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 🚀 Consumir la API
-    fetch('http://localhost:3000/api/comunidades/comunidad')
-        .then(response => {
-            if (!response.ok) throw new Error('Error al conectar con la API');
-            return response.json();
-        })
-        .then(data => {
+    // =========================================================================
+    // 🚀 Consumir la API usando IP dinámica (CON RESPALDO EN LOCALHOST)
+    // =========================================================================
+    async function cargarComunidades() {
+        const endpointComunidad = '/api/comunidades/comunidad';
+        let response;
+
+        try {
+            // 💡 1. Primer intento: IP dinámica actual
+            response = await fetch(`http://${window.location.hostname}:3000${endpointComunidad}`);
+        } catch (netError) {
+            console.warn("⚠️ Falló la conexión por IP/Red. Intentando conexión local directa (localhost)...");
+            try {
+                // 🔄 2. Segundo intento (Respaldo sin red / TP-Link apagado): conecta a localhost
+                response = await fetch(`http://localhost:3000${endpointComunidad}`);
+            } catch (localError) {
+                console.error('❌ Error crítico al obtener comunidades:', localError);
+                if (gridComunidades) {
+                    gridComunidades.innerHTML = `
+                        <p style="grid-column: 1/-1; text-align: center; color: red; padding: 20px;">
+                            Error al cargar las comunidades desde el servidor. Revisa si el servicio backend está encendido.
+                        </p>`;
+                }
+                return;
+            }
+        }
+
+        try {
+            if (!response || !response.ok) {
+                throw new Error('Error al conectar con la API');
+            }
+
+            const data = await response.json();
             listaComunidadesGlobal = data;
             pintarCards(listaComunidadesGlobal);
-        })
-        .catch(error => {
-            console.error('❌ Error al obtener comunidades:', error);
+
+        } catch (error) {
+            console.error('❌ Error al procesar JSON de comunidades:', error);
             if (gridComunidades) {
                 gridComunidades.innerHTML = `
                     <p style="grid-column: 1/-1; text-align: center; color: red; padding: 20px;">
-                        Error al cargar las comunidades desde el servidor.
+                        Error al interpretar la respuesta del servidor.
                     </p>`;
             }
-        });
+        }
+    }
+
+    // Llamada inicial para cargar los datos
+    cargarComunidades();
 
     // 🔍 Buscador en tiempo real
     if (buscarInput) {

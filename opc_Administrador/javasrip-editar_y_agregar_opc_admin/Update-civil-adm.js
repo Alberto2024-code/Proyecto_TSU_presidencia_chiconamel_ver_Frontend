@@ -24,8 +24,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ==========================================
 async function cargarComunidades() {
     const selectComunidad = document.getElementById('comunidad');
+    const endpointComunidades = '/api/comunidades/comunidades';
+    let response;
+
     try {
-        const response = await fetch('http://localhost:3000/api/comunidades/comunidades');
+        try {
+            // 💡 1. Primer intento: Host/IP dinámica
+            response = await fetch(`http://${window.location.hostname}:3000${endpointComunidades}`);
+        } catch (netError) {
+            console.warn("⚠️ Falló la conexión por IP/Red al cargar comunidades. Intentando localhost...");
+            // 🔄 2. Segundo intento (Respaldo sin red / router apagado): localhost
+            response = await fetch(`http://localhost:3000${endpointComunidades}`);
+        }
+
+        if (!response || !response.ok) {
+            throw new Error('Error al consultar el catálogo de comunidades.');
+        }
+
         const comunidades = await response.json();
 
         selectComunidad.innerHTML = '<option value="">-- Selecciona una Comunidad --</option>';
@@ -44,8 +59,23 @@ async function cargarComunidades() {
 // 🎯 NUEVA FUNCIÓN: Carga las calles en el nuevo select
 async function cargarDomicilios() {
     const selectDomicilio = document.getElementById('domicilio');
+    const endpointDomicilios = '/api/civiles/domicilios';
+    let response;
+
     try {
-        const response = await fetch('http://localhost:3000/api/civiles/domicilios');
+        try {
+            // 💡 1. Primer intento: Host/IP dinámica
+            response = await fetch(`http://${window.location.hostname}:3000${endpointDomicilios}`);
+        } catch (netError) {
+            console.warn("⚠️ Falló la conexión por IP/Red al cargar domicilios. Intentando localhost...");
+            // 🔄 2. Segundo intento: localhost
+            response = await fetch(`http://localhost:3000${endpointDomicilios}`);
+        }
+
+        if (!response || !response.ok) {
+            throw new Error('Error al consultar el catálogo de domicilios.');
+        }
+
         const domicilios = await response.json();
 
         selectDomicilio.innerHTML = '<option value="">-- Selecciona una Calle/Domicilio --</option>';
@@ -65,9 +95,22 @@ async function cargarDomicilios() {
 // 3. CARGA DE DATOS ORIGINALES EN EL DOM
 // ==========================================
 async function cargarDatosCivil(id) {
+    const endpointCivil = `/api/civiles/civiles/${id}`;
+    let response;
+
     try {
-        const response = await fetch(`http://localhost:3000/api/civiles/civiles/${id}`);
-        if (!response.ok) throw new Error('No se pudo obtener la información del ciudadano.');
+        try {
+            // 💡 1. Primer intento: Host/IP dinámica
+            response = await fetch(`http://${window.location.hostname}:3000${endpointCivil}`);
+        } catch (netError) {
+            console.warn("⚠️ Falló la conexión por IP/Red al consultar ciudadano. Intentando localhost...");
+            // 🔄 2. Segundo intento: localhost
+            response = await fetch(`http://localhost:3000${endpointCivil}`);
+        }
+
+        if (!response || !response.ok) {
+            throw new Error('No se pudo obtener la información del ciudadano.');
+        }
 
         const civil = await response.json();
 
@@ -76,7 +119,6 @@ async function cargarDatosCivil(id) {
         document.getElementById('apellido_materno').value = civil.apellido_materno || '';
         
         // 🎯 SELECCIÓN AUTOMÁTICA DEL DOMICILIO: Mapea con el ID devuelto por el backend
-        // Si tu backend devuelve el ID en otra propiedad (ej: civil.id_domicilio), cámbialo aquí
         document.getElementById('domicilio').value        = civil.id_domicilio || civil.domicilio || '';
         
         const inputCuenta = document.getElementById('cuenta-no') || document.getElementById('cuenta_no');
@@ -98,7 +140,7 @@ async function cargarDatosCivil(id) {
 }
 
 // ==========================================
-// 4. PERSISTENCIA: ENVÍO DE ACTUALIZACIÓN (PUT)
+// 4. PERSISTENCIA: ENVÍO DE ACTUALIZACIÓN (PUT CON FALLBACK)
 // ==========================================
 document.getElementById('formUsuario').addEventListener('submit', async (e) => {
     e.preventDefault(); 
@@ -145,20 +187,36 @@ document.getElementById('formUsuario').addEventListener('submit', async (e) => {
         id_comunidad: parseInt(id_comunidad)
     };
 
+    const endpointUpdate = `/api/civiles/Update/${id}`;
+    const opcionesPeticion = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(civilModificado)
+    };
+
+    let response;
+
     try {
-        const response = await fetch(`http://localhost:3000/api/civiles/Update/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(civilModificado)
-        });
+        try {
+            // 💡 1. Primer intento: IP/Host dinámico
+            response = await fetch(`http://${window.location.hostname}:3000${endpointUpdate}`, opcionesPeticion);
+        } catch (netError) {
+            console.warn("⚠️ Falló la actualización por IP/Red. Intentando conexión local directa (localhost)...");
+            // 🔄 2. Segundo intento: localhost
+            response = await fetch(`http://localhost:3000${endpointUpdate}`, opcionesPeticion);
+        }
+
+        if (!response) {
+            throw new Error('No se obtuvo respuesta del servidor backend.');
+        }
 
         const data = await response.json();
 
         if (response.ok) {
             alert('¡Los datos del civil se actualizaron con éxito!');
-            window.location.href = '../../html/barrios_chiconamel.html'; // Redirige a la página de listado de civiles
+            window.location.href = '../html/barrios_chiconamel.html'; // Redirige a la página de listado de civiles
         } else {
             alert(`Error en el servidor: ${data.message || 'No se pudo actualizar el registro.'}`);
         }

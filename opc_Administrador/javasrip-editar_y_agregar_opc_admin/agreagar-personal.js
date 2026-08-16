@@ -27,16 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
     formUsuario.addEventListener('submit', async (e) => {
         e.preventDefault(); 
 
+        const endpointInsert = '/api/usuarios/incert';
+
         try {
             // Mapeo exacto basado en las IDs reales de tu archivo HTML
             const nombre           = document.getElementById('nombre').value.trim();
             const apellido_paterno = document.getElementById('apellido_paterno').value.trim();
             const apellido_materno = document.getElementById('apellido_materno').value.trim();
             const nombre_usuario   = document.getElementById('usuario').value.trim(); 
-            
-            // 🌟 CORRECCIÓN AQUÍ: Se cambió 'password' por 'input-password'
             const contrasenia      = document.getElementById('input-password').value.trim(); 
-            
             const id_rol           = parseInt(document.getElementById('rol').value.trim());   
             const estado           = document.getElementById('estado').value;          
 
@@ -50,14 +49,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 estado: estado
             };
 
-            // Despachamos la carga útil (Payload) mediante POST
-            const response = await fetch('http://localhost:3000/api/usuarios/incert', {
-                method: 'POST',           
+            const opcionesFetch = {
+                method: 'POST',          
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(nuevoUsuario)
-            });
+            };
+
+            let response;
+
+            try {
+                // 💡 1. Primer intento: IP dinámica actual
+                response = await fetch(`http://${window.location.hostname}:3000${endpointInsert}`, opcionesFetch);
+            } catch (netError) {
+                console.warn("⚠️ Falló la conexión por IP/Red. Intentando conexión local directa (localhost)...");
+                // 🔄 2. Segundo intento (Respaldo sin red / TP-Link apagado): conecta a localhost
+                response = await fetch(`http://localhost:3000${endpointInsert}`, opcionesFetch);
+            }
+
+            if (!response) {
+                throw new Error('No se obtuvo respuesta del servidor backend.');
+            }
 
             // Validamos que el servidor haya devuelto un formato JSON antes de usar .json()
             let data = {};
@@ -80,8 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
         } catch (error) {
-            console.error('Falla crítica en la petición de inserción:', error);
-            alert('Hubo un error de conexión con la API o el puerto está apagado.');
+            console.error('❌ Falla crítica en la petición de inserción:', error);
+            alert('Hubo un error de conexión con la API o el servidor local está apagado.');
         }
     });
 });

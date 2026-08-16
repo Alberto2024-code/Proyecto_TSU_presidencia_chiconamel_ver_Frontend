@@ -26,13 +26,33 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function cargarServiciosDomesticos() {
+    let respuesta;
+    const urlEndpoint = '/api/civiles/domesticos';
+
     try {
-        const respuesta = await fetch('http://localhost:3000/api/civiles/domesticos', {
+        // 💡 1. Primer intento: Ruta dinámica usando la IP actual
+        respuesta = await fetch(`http://${window.location.hostname}:3000${urlEndpoint}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
+    } catch (netError) {
+        console.warn("⚠️ Falló la conexión por IP/Red. Intentando conexión local directa (localhost)...");
+        
+        try {
+            // 🔄 2. Segundo intento (Respaldo si no hay red/TP-Link): conecta a localhost
+            respuesta = await fetch(`http://localhost:3000${urlEndpoint}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+        } catch (localError) {
+            console.error("❌ Error crítico: El servidor backend no está respondiendo en ninguna ruta.", localError);
+            alert("No se pudo conectar con el servidor. Verifica que Node.js esté activo.");
+            return;
+        }
+    }
 
-        if (!respuesta.ok) {
+    try {
+        if (!respuesta || !respuesta.ok) {
             throw new Error("No se pudo conectar con el servidor para traer los datos.");
         }
 
@@ -50,14 +70,14 @@ async function cargarServiciosDomesticos() {
 
 // 🎨 Función encargada de dibujar las filas en la tabla
 function renderizarTabla(lista) {
-    // Apuntamos al tbody de tu HTML (asegúrate de que en tu HTML el <tbody> tenga id="tabla-usuarios" o id="tabla-rezagados")
+    // Apuntamos al tbody de tu HTML
     const tablaCuerpo = document.getElementById("tabla-usuarios") || document.getElementById("tabla-rezagados");
     
     if (!tablaCuerpo) return;
 
     tablaCuerpo.innerHTML = ""; // Limpiamos el contenido anterior
 
-    if (lista.length === 0) {
+    if (!Array.isArray(lista) || lista.length === 0) {
         tablaCuerpo.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 15px;">No se encontraron registros.</td></tr>`;
         return;
     }
@@ -68,20 +88,17 @@ function renderizarTabla(lista) {
         const estadoLimpio = c.estado ? c.estado.toLowerCase() : 'desconocido';
 
         fila.innerHTML = `
-            <td>${c.id}</td>
+            <td>${c.id || c.id_usuario || '--'}</td>
             <td>${c.nombre || ''}</td>
             <td>${c.apellido_paterno || ''}</td>
             <td>${c.apellido_materno || ''}</td>
             <td>${c.cuenta_no || 'N/A'}</td>
             <td>${c.comunidad || ''}</td>
             <td>${c.domicilio || ''}</td>
-            <td><span class="badge-domestico">${c.tipo_servicio === 1 ? 'DOMÉSTICO' : c.tipo_servicio}</span></td>
+            <td><span class="badge-domestico">${c.tipo_servicio === 1 ? 'DOMÉSTICO' : (c.tipo_servicio || 'DOMÉSTICO')}</span></td>
             <td><span class="estado-${estadoLimpio}">${c.estado || 'Activo'}</span></td>
         `;
 
         tablaCuerpo.appendChild(fila);
     });
 }
-
-
- 

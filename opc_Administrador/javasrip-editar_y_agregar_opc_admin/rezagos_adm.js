@@ -11,20 +11,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// 📌 1. CARGAR Y AGRUPAR REZAGADOS POR CIUDADANO (CUENTA NO)
+// =========================================================================
+// 📌 1. CARGAR Y AGRUPAR REZAGADOS POR CIUDADANO (CON RESPALDO LOCALHOST)
+// =========================================================================
 async function cargarTablaRezagadosPendientes() {
     // Buscamos la tabla dentro del DOM
     const tbody = document.querySelector("tbody") || document.getElementById("tabla-rezagados");
-    const URL_API = "http://localhost:3000/api/adeudos/";
+    const endpointAdeudos = `/api/adeudos/`;
 
     if (!tbody) {
         console.error("No se encontró la tabla en el HTML.");
         return;
     }
 
+    let respuesta;
+
     try {
-        const respuesta = await fetch(URL_API);
-        if (!respuesta.ok) throw new Error("Error al consultar la API de adeudos.");
+        try {
+            // 💡 1. Primer intento: IP/Host dinámico detectado por el navegador
+            respuesta = await fetch(`http://${window.location.hostname}:3000${endpointAdeudos}`);
+        } catch (netError) {
+            console.warn("⚠️ Falló la conexión por IP/Red. Intentando conexión local directa (localhost)...");
+            // 🔄 2. Segundo intento (Respaldo en caso de fallo de red/red local apagada): localhost
+            respuesta = await fetch(`http://localhost:3000${endpointAdeudos}`);
+        }
+
+        if (!respuesta || !respuesta.ok) {
+            throw new Error("Error al consultar la API de adeudos.");
+        }
 
         const listaAdeudos = await respuesta.json();
 
